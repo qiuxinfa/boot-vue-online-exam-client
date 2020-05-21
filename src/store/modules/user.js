@@ -1,9 +1,10 @@
 import { login, logout, getInfo,refreshToken } from '@/api/user'
-import { setUser, setToken, removeToken, setTokenExpriredTime,getTokenExpriredTime } from '@/utils/auth'
+import { setUserId,setUsername, setToken, removeToken, setTokenExpriredTime,getTokenExpriredTime } from '@/utils/auth'
 import { resetRouter } from '@/router'
 
 const state = {
   token: '',
+  curUser: '',
   tokenExpiredTime: '',
   name: '',
   avatar: ''
@@ -21,6 +22,9 @@ const mutations = {
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
+  },
+  SET_USER: (state, user) => {
+    state.curUser = user
   }
 }
 
@@ -30,7 +34,7 @@ const actions = {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
+        const { data } = response.data
         debugger
         commit('SET_TOKEN', data.token)
         setToken(data.token)
@@ -38,8 +42,9 @@ const actions = {
         setTokenExpriredTime(data.tokenExpiredTime)
         // console.log("user 类型 "+ (typeof data.user) )
         debugger
-        let userObj = eval('(' + data.user + ')')
-        setUser(userObj)
+        let userId = data.user.id
+        setUserId(data.user.id)
+        setUsername(data.user.username)
         resolve()
       }).catch(error => {
         reject(error)
@@ -51,7 +56,7 @@ const actions = {
     debugger
     return new Promise((resolve, reject) => {
       refreshToken(state.token).then(response => {
-        const { data } = response
+        const { data } = response.data
         if (!data) {
           reject('refreshToken failed, please Login again.')
         }
@@ -72,7 +77,7 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo(state.token).then(response => {
-        const { data } = response
+        const { data } = response.data
 
         if (!data) {
           reject('Verification failed, please Login again.')

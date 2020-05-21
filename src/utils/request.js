@@ -2,7 +2,7 @@ import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
 import router from "@/router"
-import { setUser, getUser, setToken, getToken, setTokenExpriredTime, getTokenExpriredTime } from '@/utils/auth'
+import { setUsername, getUsername, setToken, getToken, setTokenExpriredTime, getTokenExpriredTime } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
@@ -147,11 +147,7 @@ service.interceptors.response.use(
 )
 
 async function doRefreshToken(){
-    let username = (getUser()).username
-    if(!username){
-      username = 'admin'
-    }
-    const result = await axios.post('http://localhost:8888/user/refreshToken',{ token: getToken(),username: username})
+    const result = await axios.post('http://localhost:8888/user/refreshToken',{ token: getToken(),username: getUsername()})
     debugger
     if(result.data.token){
       console.log("开始更新token")
@@ -165,18 +161,7 @@ async function doRefreshToken(){
 }
 
 async function doRequest (error) {
-  let u = getUser()
-  let username = u.username
-  let username2 = u['username']
-  let token2 = getToken()
-  console.log("doRequest当前用户: "+u)
-  console.log("doRequest请求数据是: token " + token2)
-  console.log("doRequest请求数据是: username " + username)
-  console.log("doRequest请求username2" + username2)
-  if(!username){
-    username = 'admin'
-  }
-  const result = await axios.post('http://localhost:8888/user/refreshToken',{ token: getToken(),username: username})
+  const result = await axios.post('http://localhost:8888/user/refreshToken',{ token: getToken(),username: getUsername()})
   debugger
   console.log("doRequest刷新token返回的数据: "+result)
   let token = result.data.token

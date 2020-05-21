@@ -6,6 +6,7 @@ Vue.use(Router)
 /* Layout */
 import Layout from '@/layout'
 
+
 /**
  * Note: sub-menu only appear when route children.length >= 1
  * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
@@ -44,6 +45,50 @@ export const constantRoutes = [
     hidden: true
   },
 
+  {
+    path: '/exam',
+    component: Layout,
+    redirect: '/exam/list',
+    name: 'exam',
+    meta: { title: 'Exam', icon: 'dashboard' },
+    children: [{
+      path: 'list',
+      name: 'examList',
+      component: () => import('@/views/exam/examList'),
+      meta: { title: 'ExamList', icon: 'dashboard' }
+    },
+    {path: 'detail',
+      name: 'examDetail',
+      hidden: true,
+      component: () => import('@/views/exam/examDetail'),
+      meta: { title: 'ExamDetail', icon: 'dashboard' }
+    },
+    {path: 'answer',
+      name: 'answer',
+      hidden: true,
+      component: () => import('@/views/exam/answer'),
+      meta: { title: 'ExamAnswer', icon: 'dashboard' }
+    },
+    {path: 'record/list',
+      name: 'recordList',
+      component: () => import('@/views/exam/examRecord'),
+      meta: { title: 'ExamRecord', icon: 'dashboard' }
+    }
+    ]
+  },
+
+  {
+    path: '/user',
+    component: Layout,
+    redirect: '/user/list',
+    children: [{
+      path: 'list',
+      name: 'UserList',
+      component: () => import('@/views/user/userList'),
+      meta: { title: 'UserList', icon: 'dashboard' }
+    }]
+  },
+  
   {
     path: '/',
     component: Layout,

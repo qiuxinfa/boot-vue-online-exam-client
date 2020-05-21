@@ -113,7 +113,7 @@ export default {
           this.$store.dispatch('user/login', this.loginForm).then(() => {
             debugger
             // this.$router.push({ path: this.redirect || '/' })
-             this.$router.push({ path: '/' })
+             this.$router.push({ path: '/exam' })
             this.loading = false
           }).catch(() => {
             this.loading = false

@@ -16,6 +16,38 @@ export function getInfo(token) {
   })
 }
 
+export function getUserList(data) {
+  return request({
+    url: '/user/list',
+    method: 'get',
+    params: data
+  })
+}
+
+export function addUser(data) {
+  return request({
+    url: '/user/add',
+    method: 'post',
+    data
+  })
+}
+
+export function updateUser(data) {
+  return request({
+    url: '/user/update',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteUser(id) {
+  return request({
+    url: '/user/delete',
+    method: 'post',
+    params:{id}
+  })
+}
+
 export function logout() {
   return request({
     url: '/user/logout',
