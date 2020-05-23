@@ -44,9 +44,19 @@ export function deleteUser(id) {
   return request({
     url: '/user/delete',
     method: 'post',
-    params:{id}
+    params: id
   })
 }
+
+export function upload(data) {
+  return request({
+    url: '/user/upload',
+    method: 'post',
+    data
+  })
+}
+
+
 
 export function logout() {
   return request({
@@ -60,5 +70,13 @@ export function refreshToken(token) {
     url: '/user/refreshToken',
     method: 'get',
     params: { token }
+  })
+}
+
+
+export function getRoleList() {
+  return request({
+    url: '/role/list',
+    method: 'get'
   })
 }

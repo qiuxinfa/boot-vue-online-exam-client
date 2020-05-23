@@ -8,11 +8,15 @@
       fit
       highlight-current-row
     >
-<!--      <el-table-column align="center" label="ID" width="95">
-        <template slot-scope="scope">
-          {{ scope.row.id }}
-        </template>
-      </el-table-column> -->
+     <el-table-column
+              label="序号"
+              type="index"
+              width="50"
+              align="center">
+          <template slot-scope="scope">
+              <span>{{(startPage - 1) * pageSize + scope.$index + 1}}</span>
+          </template>
+      </el-table-column>
       <el-table-column label="姓名">
         <template slot-scope="scope">
           {{ scope.row.username }}
@@ -43,6 +47,17 @@
         <template slot-scope="scope">
           {{ scope.row.costTime }}
         </template>
+      </el-table-column>
+      <el-table-column
+            align="center"
+            fixed="right"
+            label="操作">
+            <template slot-scope="scope">
+              <el-button
+                size="mini"
+                type="primary" icon="el-icon-edit"
+                @click="handleView(scope.row.id)">查看试卷详情</el-button>
+            </template>
       </el-table-column>
     </el-table>
 

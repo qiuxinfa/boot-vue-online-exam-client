@@ -109,32 +109,32 @@ service.interceptors.response.use(
   },
   error => {
     console.log('err' + error) // for debug
-    debugger
-    //刷新token的第2种方法: 后端返回401,表示在过期后允许的时间内,刷新token
-    if (error.response) {
-      if (error.response.status === 401) {
-         doRefreshToken(error)
-        // 如果当前路由不是login，并且用户有 “记住密码” 的操作
-        //那么去请求新 token
-        if (router.currentRoute.name !== 'login') {
-          //过期后1分钟之内,可以刷新token
-          let diff = Date.now() - getTokenExpriredTime()
-          if (diff >0 && diff <= 1000*60*5 ) {
-            console.log("返回401后,开始刷新token")
-            //刷新token,并且继续发送原来的请求
-            return doRequest(error)
-          } else {
-            console.log("返回401后,开始返回登录页")
-            Message.error('登陆过期请重新登陆啊！')
-            setToken('')
-            setTokenExpriredTime('')
-            router.push({
-              name: 'login'
-            })
-          }
-        }
-      }
-   }
+   //  debugger
+   //  //刷新token的第2种方法: 后端返回401,表示在过期后允许的时间内,刷新token
+   //  if (error.response) {
+   //    if (error.response.status === 401) {
+   //       doRefreshToken(error)
+   //      // 如果当前路由不是login，并且用户有 “记住密码” 的操作
+   //      //那么去请求新 token
+   //      if (router.currentRoute.name !== 'login') {
+   //        //过期后1分钟之内,可以刷新token
+   //        let diff = Date.now() - getTokenExpriredTime()
+   //        if (diff >0 && diff <= 1000*60*5 ) {
+   //          console.log("返回401后,开始刷新token")
+   //          //刷新token,并且继续发送原来的请求
+   //          return doRequest(error)
+   //        } else {
+   //          console.log("返回401后,开始返回登录页")
+   //          Message.error('登陆过期请重新登陆啊！')
+   //          setToken('')
+   //          setTokenExpriredTime('')
+   //          router.push({
+   //            name: 'login'
+   //          })
+   //        }
+   //      }
+   //    }
+   // }
 
    //拒绝请求
     // Message({

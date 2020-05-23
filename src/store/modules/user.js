@@ -42,6 +42,9 @@ const actions = {
         setTokenExpriredTime(data.tokenExpiredTime)
         // console.log("user 类型 "+ (typeof data.user) )
         debugger
+        //设置name和头像
+        commit('SET_NAME', data.user.username)
+        commit('SET_AVATAR', data.user.photoUrl)
         let userId = data.user.id
         setUserId(data.user.id)
         setUsername(data.user.username)
