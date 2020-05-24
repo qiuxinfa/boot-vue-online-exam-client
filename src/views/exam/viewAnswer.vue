@@ -107,7 +107,7 @@
               </div>
               <div class="analysis" v-if="isPractice">
                 <ul>
-                  <li> <el-tag type="success">你的答案：</el-tag><span class="right">{{fillList[index]=='?' ? '未作答':fillList[index]}}</span></li>
+                  <li v-if="fillList[index]"> <el-tag type="success">你的答案：</el-tag><span class="right">{{fillList[index]=='?' ? '未作答':fillList[index]}}</span></li>
                   <li> <el-tag type="success">正确答案：</el-tag><span class="right">{{topic[0][index].questionAnswer}}</span></li>
                   <li><el-tag>题目解析：</el-tag></li>
                   <li>{{topic[0][index].questionExplain == null ? '暂无解析': topic[0][index].questionExplain}}</li>
@@ -116,12 +116,12 @@
             </div>
             <div class="judge" v-if="currentType == 1">
               <el-radio-group v-model="judgeAnswer[index]" @change="getJudgeLabel">
-                <el-radio :label="answerT" :disabled="isDisable">正确</el-radio>
-                <el-radio :label="answerF" :disabled="isDisable">错误</el-radio>
+                <el-radio :label="answerT" :disabled="isDisable">T</el-radio>
+                <el-radio :label="answerF" :disabled="isDisable">F</el-radio>
               </el-radio-group>
               <div class="analysis" v-if="isPractice">
                 <ul>
-                  <li> <el-tag type="success">你的答案：</el-tag><span class="right">{{judgeList[index]}}</span></li>
+                  <li v-if="judgeList[index]"> <el-tag type="success">你的答案：</el-tag><span class="right">{{judgeList[index] == '?' ? '未作答' : judgeList[index]}}</span></li>
                   <li> <el-tag type="success">正确答案：</el-tag><span class="right">{{topic[1][index].questionAnswer}}</span></li>
                   <li><el-tag>题目解析：</el-tag></li>
                   <li>{{topic[1][index].questionExplain == null ? '暂无解析': topic[1][index].questionExplain}}</li>
@@ -130,14 +130,14 @@
             </div>
             <div v-if="currentType == 2">
               <el-radio-group v-model="radio[index]" @change="getChangeLabel" >
-                <el-radio :label="answerA" :disabled="isDisable">A: {{showAnswer.choiceA}}</el-radio>
-                <el-radio :label="answerB" :disabled="isDisable">B: {{showAnswer.choiceB}}</el-radio>
-                <el-radio :label="answerC" :disabled="isDisable">C: {{showAnswer.choiceC}}</el-radio>
-                <el-radio :label="answerD" :disabled="isDisable">D: {{showAnswer.choiceD}}</el-radio>
+                <el-radio :label="answerA" :disabled="isDisable">A. {{showAnswer.choiceA}}</el-radio>
+                <el-radio :label="answerB" :disabled="isDisable">B. {{showAnswer.choiceB}}</el-radio>
+                <el-radio :label="answerC" :disabled="isDisable">C. {{showAnswer.choiceC}}</el-radio>
+                <el-radio :label="answerD" :disabled="isDisable">D. {{showAnswer.choiceD}}</el-radio>
               </el-radio-group>
               <div class="analysis" v-if="isPractice">
                 <ul>
-                  <li> <el-tag type="success">你的答案：</el-tag><span class="right">{{singleList[index] == '' ? '未作答':singleList[index]}}</span></li>
+                  <li v-if="singleList[index]"> <el-tag type="success">你的答案：</el-tag><span class="right">{{singleList[index] == '?' ? '未作答':singleList[index]}}</span></li>
                   <li> <el-tag type="success">正确答案：</el-tag><span class="right">{{topic[2][index].questionAnswer}}</span></li>
                   <li><el-tag>题目解析：</el-tag></li>
                   <li>{{topic[2][index].questionExplain == null ? '暂无解析': topic[2][index].questionExplain}}</li>
@@ -146,14 +146,14 @@
             </div>
              <div v-if="currentType == 3">
                <el-checkbox-group v-model="multi[index]" @change="changeMulti" >
-                 <el-checkbox :label="answerA" :disabled="isDisable">A: {{showAnswer.choiceA}}</el-checkbox>
-                 <el-checkbox :label="answerB" :disabled="isDisable">B: {{showAnswer.choiceB}}</el-checkbox>
-                 <el-checkbox :label="answerC" :disabled="isDisable">C: {{showAnswer.choiceC}}</el-checkbox>
-                 <el-checkbox :label="answerD" :disabled="isDisable">D: {{showAnswer.choiceD}}</el-checkbox>
+                 <el-checkbox :label="answerA" :disabled="isDisable">A. {{showAnswer.choiceA}}</el-checkbox>
+                 <el-checkbox :label="answerB" :disabled="isDisable">B. {{showAnswer.choiceB}}</el-checkbox>
+                 <el-checkbox :label="answerC" :disabled="isDisable">C. {{showAnswer.choiceC}}</el-checkbox>
+                 <el-checkbox :label="answerD" :disabled="isDisable">D. {{showAnswer.choiceD}}</el-checkbox>
                </el-checkbox-group>
                <div class="analysis" v-if="isPractice">
                  <ul>
-                   <li> <el-tag type="success">你的答案：</el-tag><span class="right">{{multiList[index] == '' ? '未作答':multiList[index]}}</span></li>
+                   <li v-if="multiList[index]"> <el-tag type="success">你的答案：</el-tag><span class="right">{{multiList[index] == '?' ? '未作答':multiList[index]}}</span></li>
                    <li> <el-tag type="success">正确答案：</el-tag><span class="right">{{topic[3][index].questionAnswer}}</span></li>
                    <li><el-tag>题目解析：</el-tag></li>
                    <li>{{topic[3][index].questionExplain == null ? '暂无解析': topic[3][index].questionExplain}}</li>
@@ -195,7 +195,7 @@ export default {
       time: null, //考试持续时间
       reduceAnswer:[],  //vue官方不支持3层以上数据嵌套,如嵌套则会数据渲染出现问题,此变量直接接收3层嵌套时的数据。
       answerScore: 0, //答题总分数
-      bg_flag: false, //已答标识符,已答改变背景色
+      bg_flag: true, //已答标识符,已答改变背景色
       isFillClick: false, //选择题是否点击标识符
       slider_flag: true, //左侧显示隐藏标识符
       flag: false, //个人信息显示隐藏标识符
@@ -270,7 +270,6 @@ export default {
         this.judgeList = response.data.data.judgeAnswer
         this.singleList = response.data.data.singleAnswer
         this.multiList = response.data.data.multiAnswer
-        console.log("单选题singleList3 ："+this.singleList[2])
        // debugger
        // console.log("多选题答题记录："+multis)
         this.examData = response.data.data.exam   //考试安排
@@ -303,6 +302,7 @@ export default {
           }else{
             // 填充答题记录
             this.multi[i]= this.multiList[i].split(",")
+            this.topic[3][i]["isClick"] = true
           }
         }
 
@@ -316,28 +316,32 @@ export default {
             for(let j=0; j<fillArr.length;j++){
               children[j] = fillArr[j] == "null" ? "" : fillArr[j]
             }
+            //已答题标志
             children[3] = fillArr.length
           }
           father.push(children)
         }
         this.fillAnswer = father
         //填充判断题答题记录
-        this.judgeAnswer = this.judgeList
-        // for(let i = 0; i< this.topicCount[1]; i++){
-        //   // this.judgeAnswer = this.judgeList
-        //   // if(this.judgeList[i] != '?'){
-        //   //   this.judgeAnswer[i] = this.judgeList[i]
-        //   // }
-        // }
+       // this.judgeAnswer = this.judgeList
+        for(let i = 0; i< this.topicCount[1]; i++){
+          this.judgeAnswer = this.judgeList
+          if(this.judgeList[i] != '?'){
+            this.judgeAnswer[i] = this.judgeList[i]
+            //已答题标志
+            this.topic[1][i]["isClick"] = true
+          }
+        }
         //单选题答题记录
-        this.radio = this.singleList
-        console.log("单选题radio ："+this.radio[2])
-        // for(let i=0;i<this.topicCount[2];i++){
-        //   debugger
-        //   if(singles[i] != '?'){
-        //     this.radio[i] = singles[i]
-        //   }
-        // }
+        // this.radio = this.singleList
+        for(let i=0;i<this.topicCount[2];i++){
+          debugger
+          if(this.singleList[i] != '?'){
+            this.radio[i] = this.singleList[i]
+             //已答题标志
+            this.topic[2][i]["isClick"] = true
+          }
+        }
         let dataInit = this.topic[0]
         this.number = 1
         this.showQuestion = dataInit[0].questionContent

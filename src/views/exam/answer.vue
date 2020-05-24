@@ -107,7 +107,6 @@
               </div>
               <div class="analysis" v-if="isPractice">
                 <ul>
-                  <li> <el-tag type="success">你的答案：</el-tag><span class="right">{{fillAnswer[index][currentIndex]}}</span></li>
                   <li> <el-tag type="success">正确姿势：</el-tag><span class="right">{{topic[0][index].questionAnswer}}</span></li>
                   <li><el-tag>题目解析：</el-tag></li>
                   <li>{{topic[0][index].questionExplain == null ? '暂无解析': topic[0][index].questionExplain}}</li>
@@ -116,12 +115,11 @@
             </div>
             <div class="judge" v-if="currentType == 1">
               <el-radio-group v-model="judgeAnswer[index]" @change="getJudgeLabel">
-                <el-radio :label="answerT">正确</el-radio>
-                <el-radio :label="answerF">错误</el-radio>
+                <el-radio :label="answerT">T</el-radio>
+                <el-radio :label="answerF">F</el-radio>
               </el-radio-group>
               <div class="analysis" v-if="isPractice">
                 <ul>
-                  <li> <el-tag type="success">你的答案：</el-tag><span class="right">{{judgeAnswer[index]}}</span></li>
                   <li> <el-tag type="success">正确姿势：</el-tag><span class="right">{{topic[1][index].questionAnswer}}</span></li>
                   <li><el-tag>题目解析：</el-tag></li>
                   <li>{{topic[1][index].questionExplain == null ? '暂无解析': topic[1][index].questionExplain}}</li>
@@ -130,10 +128,10 @@
             </div>
             <div v-if="currentType == 2">
               <el-radio-group v-model="radio[index]" @change="getChangeLabel" >
-                <el-radio :label="answerA">A: {{showAnswer.choiceA}}</el-radio>
-                <el-radio :label="answerB">B: {{showAnswer.choiceB}}</el-radio>
-                <el-radio :label="answerC">C: {{showAnswer.choiceC}}</el-radio>
-                <el-radio :label="answerD">D: {{showAnswer.choiceD}}</el-radio>
+                <el-radio :label="answerA">A. {{showAnswer.choiceA}}</el-radio>
+                <el-radio :label="answerB">B. {{showAnswer.choiceB}}</el-radio>
+                <el-radio :label="answerC">C. {{showAnswer.choiceC}}</el-radio>
+                <el-radio :label="answerD">D. {{showAnswer.choiceD}}</el-radio>
               </el-radio-group>
               <div class="analysis" v-if="isPractice">
                 <ul>
@@ -145,10 +143,10 @@
             </div>
              <div v-if="currentType == 3">
                <el-checkbox-group v-model="multi[index]" @change="changeMulti" >
-                 <el-checkbox :label="answerA">A: {{showAnswer.choiceA}}</el-checkbox>
-                 <el-checkbox :label="answerB">B: {{showAnswer.choiceB}}</el-checkbox>
-                 <el-checkbox :label="answerC">C: {{showAnswer.choiceC}}</el-checkbox>
-                 <el-checkbox :label="answerD">D: {{showAnswer.choiceD}}</el-checkbox>
+                 <el-checkbox :label="answerA">A. {{showAnswer.choiceA}}</el-checkbox>
+                 <el-checkbox :label="answerB">B. {{showAnswer.choiceB}}</el-checkbox>
+                 <el-checkbox :label="answerC">C. {{showAnswer.choiceC}}</el-checkbox>
+                 <el-checkbox :label="answerD">D. {{showAnswer.choiceD}}</el-checkbox>
                </el-checkbox-group>
                <div class="analysis" v-if="isPractice">
                  <ul>
@@ -274,6 +272,10 @@ export default {
         this.score.push((this.topic[2].length - 0)*(this.singleScore - 0)) //把每种题型总分存入score
         this.score.push((this.topic[3].length - 0)*(this.multiScore - 0)) //把每种题型总分存入score
 
+        //记录判断题答案
+        for(let i=0; i<this.topicCount[1];i++){
+          this.judgeAnswer[i] = null
+        }
         //记录单选题答案
         for(let i=0;i<this.topic[2].length;i++){
           this.topic1Answer[i] = null
@@ -635,19 +637,6 @@ export default {
             /* 计算单选题总分 */
             let topic1Answer = this.topic1Answer
             let singleAnswer = "";
-            // for(let i = 0; i< this.topicCount[2]; i++){
-            //     let right = this.topic1Answer[i]
-            //     console.log("单选题right  "+right)
-            //     if(!right){
-            //       right = '?'
-            //     }
-            //     // 题与题之间用*号分隔
-            //     singleAnswer += right +"*";
-            //     //console.log("选择题：答案："+this.topic[2][index].questionAnswer+"  用户选择了 "+right)
-            //     if(right == this.topic[2][index].questionAnswer) { // 当前选项与正确答案对比
-            //       finalScore += (this.singleScore - 0)  // 计算总分数
-            //     }
-            // }
             topic1Answer.forEach((element,index) => {
               let right = element
               console.log("单选题element  "+element)
@@ -668,25 +657,26 @@ export default {
             let multiAnswer = this.multi
             let joinAnswerMulti = "";
             multiAnswer.forEach((element,index) => { //循环每道选择题根据选项计算分数
-
               let right = ''
-              console.log("多选题 "+index +"选择了"+right)
-              if(!element){
-                right = '?'
+              element = ""+element
+              if(element.includes('A') || element.includes('B') || element.includes('C') || element.includes('D')){
+                //这么做，主要是为了排序
+                if(element.includes('A')){
+                  right += 'A,'
+                }
+                if(element.includes('B')){
+                  right += 'B,'
+                }
+                if(element.includes('C')){
+                  right += 'C,'
+                }
+                if(element.includes('D')){
+                  right += 'D'
+                }
+                //去掉最后一个逗号
+                right=(right.substring(right.length-1)==',')?right.substring(0,right.length-1):right
               }else{
-                   element = ""+element
-                   if(element.includes('A')){
-                     right += 'A'
-                   }
-                   if(element.includes('B')){
-                     right += 'B'
-                   }
-                   if(element.includes('C')){
-                     right += 'C'
-                   }
-                   if(element.includes('D')){
-                     right += 'D'
-                   }
+                right = '?'
               }
               // 题目之间用星号隔开
               joinAnswerMulti += right + "*";
