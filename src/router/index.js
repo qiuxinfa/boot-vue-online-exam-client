@@ -73,6 +73,12 @@ export const constantRoutes = [
       name: 'recordList',
       component: () => import('@/views/exam/examRecord'),
       meta: { title: 'ExamRecord', icon: 'dashboard' }
+    },
+    {path: 'record/viewAnswer',
+      name: 'viewAnswer',
+      hidden: true,
+      component: () => import('@/views/exam/viewAnswer'),
+      meta: { title: 'viewAnswer', icon: 'dashboard' }
     }
     ]
   },

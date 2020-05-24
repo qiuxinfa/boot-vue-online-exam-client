@@ -31,3 +31,11 @@ export function getExamRecordList(data) {
     params: data
   })
 }
+
+export function viewExamRecord(data) {
+  return request({
+    url: '/examRecord/view',
+    method: 'get',
+    params: data
+  })
+}

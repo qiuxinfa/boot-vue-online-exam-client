@@ -75,7 +75,6 @@ service.interceptors.response.use(
    * You can also judge the status by HTTP Status Code
    */
   response => {
-    debugger
     return response
     // const status = response.state
     // if(status == 200){

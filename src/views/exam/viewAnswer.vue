@@ -98,7 +98,7 @@
             <p class="topic"><span class="number">{{number}}</span>{{showQuestion}}</p>
             <div class="fill" v-if="currentType == 0">
               <div v-for="(item,currentIndex) in part" :key="currentIndex">
-                <el-input placeholder="请填在此处"
+                <el-input placeholder="请填在此处" :disabled="isDisable"
                   v-model="fillAnswer[index][currentIndex]"
                   clearable
                   @clear="clearFillAnswer"
@@ -107,8 +107,8 @@
               </div>
               <div class="analysis" v-if="isPractice">
                 <ul>
-                  <li> <el-tag type="success">你的答案：</el-tag><span class="right">{{fillAnswer[index][currentIndex]}}</span></li>
-                  <li> <el-tag type="success">正确姿势：</el-tag><span class="right">{{topic[0][index].questionAnswer}}</span></li>
+                  <li> <el-tag type="success">你的答案：</el-tag><span class="right">{{fillList[index]=='?' ? '未作答':fillList[index]}}</span></li>
+                  <li> <el-tag type="success">正确答案：</el-tag><span class="right">{{topic[0][index].questionAnswer}}</span></li>
                   <li><el-tag>题目解析：</el-tag></li>
                   <li>{{topic[0][index].questionExplain == null ? '暂无解析': topic[0][index].questionExplain}}</li>
                 </ul>
@@ -116,13 +116,13 @@
             </div>
             <div class="judge" v-if="currentType == 1">
               <el-radio-group v-model="judgeAnswer[index]" @change="getJudgeLabel">
-                <el-radio :label="answerT">正确</el-radio>
-                <el-radio :label="answerF">错误</el-radio>
+                <el-radio :label="answerT" :disabled="isDisable">正确</el-radio>
+                <el-radio :label="answerF" :disabled="isDisable">错误</el-radio>
               </el-radio-group>
               <div class="analysis" v-if="isPractice">
                 <ul>
-                  <li> <el-tag type="success">你的答案：</el-tag><span class="right">{{judgeAnswer[index]}}</span></li>
-                  <li> <el-tag type="success">正确姿势：</el-tag><span class="right">{{topic[1][index].questionAnswer}}</span></li>
+                  <li> <el-tag type="success">你的答案：</el-tag><span class="right">{{judgeList[index]}}</span></li>
+                  <li> <el-tag type="success">正确答案：</el-tag><span class="right">{{topic[1][index].questionAnswer}}</span></li>
                   <li><el-tag>题目解析：</el-tag></li>
                   <li>{{topic[1][index].questionExplain == null ? '暂无解析': topic[1][index].questionExplain}}</li>
                 </ul>
@@ -130,31 +130,33 @@
             </div>
             <div v-if="currentType == 2">
               <el-radio-group v-model="radio[index]" @change="getChangeLabel" >
-                <el-radio :label="answerA">A: {{showAnswer.choiceA}}</el-radio>
-                <el-radio :label="answerB">B: {{showAnswer.choiceB}}</el-radio>
-                <el-radio :label="answerC">C: {{showAnswer.choiceC}}</el-radio>
-                <el-radio :label="answerD">D: {{showAnswer.choiceD}}</el-radio>
+                <el-radio :label="answerA" :disabled="isDisable">A: {{showAnswer.choiceA}}</el-radio>
+                <el-radio :label="answerB" :disabled="isDisable">B: {{showAnswer.choiceB}}</el-radio>
+                <el-radio :label="answerC" :disabled="isDisable">C: {{showAnswer.choiceC}}</el-radio>
+                <el-radio :label="answerD" :disabled="isDisable">D: {{showAnswer.choiceD}}</el-radio>
               </el-radio-group>
               <div class="analysis" v-if="isPractice">
                 <ul>
-                  <li> <el-tag type="success">正确姿势：</el-tag><span class="right">{{reduceAnswer.rightAnswer}}</span></li>
+                  <li> <el-tag type="success">你的答案：</el-tag><span class="right">{{singleList[index] == '' ? '未作答':singleList[index]}}</span></li>
+                  <li> <el-tag type="success">正确答案：</el-tag><span class="right">{{topic[2][index].questionAnswer}}</span></li>
                   <li><el-tag>题目解析：</el-tag></li>
-                  <li>{{reduceAnswer.questionExplain == null ? '暂无解析': reduceAnswer.questionExplain}}</li>
+                  <li>{{topic[2][index].questionExplain == null ? '暂无解析': topic[2][index].questionExplain}}</li>
                 </ul>
               </div>
             </div>
              <div v-if="currentType == 3">
                <el-checkbox-group v-model="multi[index]" @change="changeMulti" >
-                 <el-checkbox :label="answerA">A: {{showAnswer.choiceA}}</el-checkbox>
-                 <el-checkbox :label="answerB">B: {{showAnswer.choiceB}}</el-checkbox>
-                 <el-checkbox :label="answerC">C: {{showAnswer.choiceC}}</el-checkbox>
-                 <el-checkbox :label="answerD">D: {{showAnswer.choiceD}}</el-checkbox>
+                 <el-checkbox :label="answerA" :disabled="isDisable">A: {{showAnswer.choiceA}}</el-checkbox>
+                 <el-checkbox :label="answerB" :disabled="isDisable">B: {{showAnswer.choiceB}}</el-checkbox>
+                 <el-checkbox :label="answerC" :disabled="isDisable">C: {{showAnswer.choiceC}}</el-checkbox>
+                 <el-checkbox :label="answerD" :disabled="isDisable">D: {{showAnswer.choiceD}}</el-checkbox>
                </el-checkbox-group>
                <div class="analysis" v-if="isPractice">
                  <ul>
-                   <li> <el-tag type="success">正确姿势：</el-tag><span class="right">{{reduceAnswer.rightAnswer}}</span></li>
+                   <li> <el-tag type="success">你的答案：</el-tag><span class="right">{{multiList[index] == '' ? '未作答':multiList[index]}}</span></li>
+                   <li> <el-tag type="success">正确答案：</el-tag><span class="right">{{topic[3][index].questionAnswer}}</span></li>
                    <li><el-tag>题目解析：</el-tag></li>
-                   <li>{{reduceAnswer.questionExplain == null ? '暂无解析': reduceAnswer.questionExplain}}</li>
+                   <li>{{topic[3][index].questionExplain == null ? '暂无解析': topic[3][index].questionExplain}}</li>
                  </ul>
                </div>
              </div>
@@ -174,19 +176,20 @@
 </template>
 
 <script>
-import { getExamDetail,addExamRecord } from '@/api/exam'
+import { viewExamRecord,getExamDetail,addExamRecord } from '@/api/exam'
 import { getUserId } from '@/utils/auth'
 
 export default {
   data() {
     return {
+      isDisable: true,
       answerA: 'A',
       answerB: 'B',
       answerC: 'C',
       answerD: 'D',
       answerT: 'T',
       answerF: 'F',
-      isPractice: false,
+      isPractice: true,
       startTime: null, //考试开始时间
       endTime: null, //考试结束时间
       time: null, //考试持续时间
@@ -222,10 +225,10 @@ export default {
       multiScore: '',  //多选题分数
       judgeScore: '',  //判断题分数
       fillScore: '',  //填空题分数
-      // singleList: [],  //单选题列表
-      // multiList: [],  //多选题列表
-      // judgeList: [],  //判断题列表
-      // fillList: [],  //填空题列表
+      singleList: [],  //单选题答题记录
+      multiList: [],  //多选题答题记录
+      judgeList: [],  //判断题答题记录
+      fillList: [],  //填空题答题记录
     }
   },
   created() {
@@ -245,21 +248,38 @@ export default {
     },
   getExamData(){
 		//根据考试安排ID，查询考试的相关信息
-		let _this = this
-		_this.startTime = new Date().getTime()
-		_this.examData = _this.$route.query.exam   //考试安排
-    _this.fillScore = _this.examData.fillScore
-    _this.judgeScore = _this.examData.judgeScore
-    _this.singleScore = _this.examData.singleScore
-    _this.multiScore = _this.examData.multiScore
-    _this.time = _this.examData.totalTime
+		// let _this = this
+		// _this.startTime = new Date().getTime()
+		// _this.examData = _this.$route.query.exam   //考试安排
+  //   _this.fillScore = _this.examData.fillScore
+  //   _this.judgeScore = _this.examData.judgeScore
+  //   _this.singleScore = _this.examData.singleScore
+  //   _this.multiScore = _this.examData.multiScore
+  //   _this.time = _this.examData.totalTime
 	},
  getTopicData(){
-		let exam = this.$route.query.exam; //试卷
+		let recordId = this.$route.query.recordId; //考试记录id
+    let params = {
+      recordId: recordId
+    }
 		//查询试卷的详细信息
-    getExamDetail(exam).then(response => {
+    viewExamRecord(params).then(response => {
       if (response.data.code === 200) {
-         let dataMap = response.data.data
+        //考生答题记录
+        this.fillList = response.data.data.fillAnswer
+        this.judgeList = response.data.data.judgeAnswer
+        this.singleList = response.data.data.singleAnswer
+        this.multiList = response.data.data.multiAnswer
+        console.log("单选题singleList3 ："+this.singleList[2])
+       // debugger
+       // console.log("多选题答题记录："+multis)
+        this.examData = response.data.data.exam   //考试安排
+        this.fillScore = this.examData.fillScore
+        this.judgeScore = this.examData.judgeScore
+        this.singleScore = this.examData.singleScore
+        this.multiScore = this.examData.multiScore
+        //问题详情
+         let dataMap = response.data.data.questionMap
          this.topic = dataMap
 
         let reduceAnswer = this.topic[2][this.index]
@@ -274,22 +294,50 @@ export default {
         this.score.push((this.topic[2].length - 0)*(this.singleScore - 0)) //把每种题型总分存入score
         this.score.push((this.topic[3].length - 0)*(this.multiScore - 0)) //把每种题型总分存入score
 
-        //记录单选题答案
-        for(let i=0;i<this.topic[2].length;i++){
-          this.topic1Answer[i] = null
-        }
         //记录多选题答案
         for(let i=0;i<this.topic[3].length;i++){
-          this.multi[i] = []
+          // debugger
+          if(this.multiList[i] == '?'){
+            //没有答题
+            this.multi[i] = []
+          }else{
+            // 填充答题记录
+            this.multi[i]= this.multiList[i].split(",")
+          }
         }
 
         let len = this.topicCount[0]
         let father = []
         for(let i = 0; i < len; i++) { //根据填空题数量创建二维空数组存放每道题答案
-        let children = [null,null,null,0]
-        father.push(children)
+          let children = [null,null,null,0]
+          if(this.fillList[i] != '?'){
+            // debugger
+            let fillArr = this.fillList[i].split(",")
+            for(let j=0; j<fillArr.length;j++){
+              children[j] = fillArr[j] == "null" ? "" : fillArr[j]
+            }
+            children[3] = fillArr.length
+          }
+          father.push(children)
         }
         this.fillAnswer = father
+        //填充判断题答题记录
+        this.judgeAnswer = this.judgeList
+        // for(let i = 0; i< this.topicCount[1]; i++){
+        //   // this.judgeAnswer = this.judgeList
+        //   // if(this.judgeList[i] != '?'){
+        //   //   this.judgeAnswer[i] = this.judgeList[i]
+        //   // }
+        // }
+        //单选题答题记录
+        this.radio = this.singleList
+        console.log("单选题radio ："+this.radio[2])
+        // for(let i=0;i<this.topicCount[2];i++){
+        //   debugger
+        //   if(singles[i] != '?'){
+        //     this.radio[i] = singles[i]
+        //   }
+        // }
         let dataInit = this.topic[0]
         this.number = 1
         this.showQuestion = dataInit[0].questionContent
@@ -376,8 +424,7 @@ export default {
     },
     //记录用户的多选题答案
     changeMulti(val){
-       console.log("多选题选择了："+val)
-       debugger
+      // console.log("多选题选择了："+val)
       this.multi[this.index] = val //保存作答选项
 
       if(val) {
@@ -612,47 +659,50 @@ export default {
                 joinAnswerFill += "?" + "*"
               }
             });
-            //去掉最后一个星号
-            joinAnswerFill=(joinAnswerFill.substring(joinAnswerFill.length-1)=='*')?joinAnswerFill.substring(0,joinAnswerFill.length-1):joinAnswerFill
 
               /** 计算判断题总分 */
             let topic3Answer = this.judgeAnswer
             let joinAnswerJudge = ""
             topic3Answer.forEach((element,index) => {
-              let right = element
-              if(!element){
-                right = '?'
+              let right = null
+              switch(element) {
+                case 1 :
+                  right = "T"
+                  break
+                case 2 :
+                  right = "F"
+                  break
+                default :
+                  right = "?"
               }
-               joinAnswerJudge += right + "*"
+              // 题与题之间用*号分隔
+              joinAnswerJudge += right + "*"
              // console.log("判断题：答案："+this.topic[1][index].questionAnswer+"  用户选择了 "+right)
                   if(right == this.topic[1][index].questionAnswer) { // 当前选项与正确答案对比
                       finalScore += (this.judgeScore - 0) // 计算总分数
                 }
             })
-            //去掉最后一个星号
-            joinAnswerJudge=(joinAnswerJudge.substring(joinAnswerJudge.length-1)=='*')?joinAnswerJudge.substring(0,joinAnswerJudge.length-1):joinAnswerJudge
 
             /* 计算单选题总分 */
             let topic1Answer = this.topic1Answer
             let singleAnswer = "";
-            // for(let i = 0; i< this.topicCount[2]; i++){
-            //     let right = this.topic1Answer[i]
-            //     console.log("单选题right  "+right)
-            //     if(!right){
-            //       right = '?'
-            //     }
-            //     // 题与题之间用*号分隔
-            //     singleAnswer += right +"*";
-            //     //console.log("选择题：答案："+this.topic[2][index].questionAnswer+"  用户选择了 "+right)
-            //     if(right == this.topic[2][index].questionAnswer) { // 当前选项与正确答案对比
-            //       finalScore += (this.singleScore - 0)  // 计算总分数
-            //     }
-            // }
-            topic1Answer.forEach((element,index) => {
-              let right = element
-              console.log("单选题element  "+element)
-              if(!element){
-                right = '?'
+            topic1Answer.forEach((element,index) => { //循环每道选择题根据选项计算分数
+              let right = null
+              switch(element) { //选项1,2,3,4 转换为 "A","B","C","D"
+                case 1:
+                  right = "A"
+                  break
+                case 2:
+                  right = "B"
+                  break
+                case 3:
+                  right = "C"
+                  break
+                case 4:
+                  right = "D"
+                  break
+                default:
+                  right = "?"
               }
               // 题与题之间用*号分隔
               singleAnswer += right +"*";
@@ -661,43 +711,42 @@ export default {
                 finalScore += (this.singleScore - 0)  // 计算总分数
               }
             })
-            //去掉最后一个星号
-            singleAnswer=(singleAnswer.substring(singleAnswer.length-1)=='*')?singleAnswer.substring(0,singleAnswer.length-1):singleAnswer
 
             /* 计算多选题总分 */
             let multiAnswer = this.multi
             let joinAnswerMulti = "";
             multiAnswer.forEach((element,index) => { //循环每道选择题根据选项计算分数
-
               let right = ''
-              console.log("多选题 "+index +"选择了"+right)
-              if(!element){
-                right = '?'
+              //选项1,2,3,4 转换为 "A","B","C","D"
+              debugger
+              if(element != null && element.length > 0) {
+               // console.log("element == "+element)
+                element = ""+element
+                if(element.includes('1')){
+                  right += 'A'
+                }
+                if(element.includes('2')){
+                  right += 'B'
+                }
+                if(element.includes('3')){
+                  right += 'C'
+                }
+                if(element.includes('4')){
+                  right += 'D'
+                }
+                // 题与题之间用*号分隔，选项之间保留用逗号分隔
+                joinAnswerMulti += element +"*";
               }else{
-                   element = ""+element
-                   if(element.includes('A')){
-                     right += 'A'
-                   }
-                   if(element.includes('B')){
-                     right += 'B'
-                   }
-                   if(element.includes('C')){
-                     right += 'C'
-                   }
-                   if(element.includes('D')){
-                     right += 'D'
-                   }
+                //未做选择，用问号?表示
+                right = '?'
+                joinAnswerMulti += "?*";
               }
-              // 题目之间用星号隔开
-              joinAnswerMulti += right + "*";
              // console.log("多选题题：答案："+this.topic[3][index].questionAnswer+"  用户选择了 "+right)
                 if(right == this.topic[3][index].questionAnswer) { // 当前选项与正确答案对比
                   finalScore += (this.multiScore - 0)  // 计算总分数
                 }
 
             })
-        //去掉最后一个星号
-        joinAnswerMulti=(joinAnswerMulti.substring(joinAnswerMulti.length-1)=='*')?joinAnswerMulti.substring(0,joinAnswerMulti.length-1):joinAnswerMulti
 
         // 计算考试分数等级
         let joinLevel = 1

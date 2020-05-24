@@ -17,7 +17,7 @@
               <span>{{(startPage - 1) * pageSize + scope.$index + 1}}</span>
           </template>
       </el-table-column>
-      <el-table-column label="姓名">
+      <el-table-column label="姓名"   align="center">
         <template slot-scope="scope">
           {{ scope.row.username }}
         </template>
@@ -55,7 +55,7 @@
             <template slot-scope="scope">
               <el-button
                 size="mini"
-                type="primary" icon="el-icon-edit"
+                type="primary" icon="el-icon-view"
                 @click="handleView(scope.row.id)">查看试卷详情</el-button>
             </template>
       </el-table-column>
@@ -126,6 +126,11 @@ export default {
       }).catch(err =>{
         this.listLoading = false
       })
+    },
+
+    //查看试卷详情
+    handleView(recordId){
+      this.$router.push({path: '/exam/record/viewAnswer', query: {recordId: recordId}})
     },
 
     // 每页大小改变时触发
