@@ -39,48 +39,56 @@
               </li>
             </ul>
             <div class="l-bottom">
-			  <div class="item">
-			    <p>填空题部分</p>
-			    <ul>
-			      <li v-for="(item, index1) in topic[0]" :key="index1">
-			        <a href="javascript:;" @click="fill(index1)" :class="{'border': index == index1 && currentType == 0,'bg': fillAnswer[index1][3] != 0}"><span :class="{'mark': topic[0][index1].isMark == true}"></span>{{index1+1}}</a>
-			      </li>
-			    </ul>
-			  </div>
-			  <div class="item">
-			    <p>判断题部分</p>
-			    <ul>
-			      <li v-for="(list, index2) in topic[1]" :key="index2">
-			        <a href="javascript:;" @click="judge(index2)" :class="{'border': index == index2 && currentType == 1,'bg': bg_flag && topic[1][index2].isClick == true}"><span :class="{'mark': topic[1][index2].isMark == true}"></span>{{topicCount[0]+index2+1}}</a>
-			      </li>
-			    </ul>
-			  </div>
-        <div class="item">
-          <p>单选题部分</p>
-          <ul>
-            <li v-for="(list, index3) in topic[2]" :key="index3">
-              <a href="javascript:;"
-                @click="change(index3)"
-                :class="{'border': index == index3 && currentType == 2,'bg': bg_flag && topic[2][index3].isClick == true}">
-                <span :class="{'mark': topic[2][index3].isMark == true}"></span>
-                {{topicCount[0]+topicCount[1]+index3+1}}
-              </a>
-            </li>
-          </ul>
-        </div>
-         <div class="item">
-           <p>多选题部分</p>
-           <ul>
-             <li v-for="(list, index4) in topic[3]" :key="index4">
-               <a href="javascript:;"
-                 @click="multiChange(index4)"
-                 :class="{'border': index == index4 && currentType == 3,'bg': bg_flag && topic[3][index4].isClick == true}">
-                 <span :class="{'mark': topic[3][index4].isMark == true}"></span>
-                 {{topicCount[0]+topicCount[1]+topicCount[2]+index4+1}}
-               </a>
-             </li>
-           </ul>
-         </div>
+        <template v-if="this.topic[0].length != 0">
+          <div class="item" >
+            <p>填空题部分</p>
+            <ul>
+              <li v-for="(item, index1) in topic[0]" :key="index1">
+                <a href="javascript:;" @click="fill(index1)" :class="{'border': index == index1 && currentType == 0,'bg': fillAnswer[index1][3] != 0}"><span :class="{'mark': topic[0][index1].isMark == true}"></span>{{index1+1}}</a>
+              </li>
+            </ul>
+          </div>
+       </template>
+       <template v-if="this.topic[1].length != 0">
+          <div class="item">
+            <p>判断题部分</p>
+            <ul>
+              <li v-for="(list, index2) in topic[1]" :key="index2">
+                <a href="javascript:;" @click="judge(index2)" :class="{'border': index == index2 && currentType == 1,'bg': bg_flag && topic[1][index2].isClick == true}"><span :class="{'mark': topic[1][index2].isMark == true}"></span>{{topicCount[0]+index2+1}}</a>
+              </li>
+            </ul>
+          </div>
+       </template>
+       <template v-if="this.topic[2].length != 0">
+          <div class="item">
+            <p>单选题部分</p>
+            <ul>
+              <li v-for="(list, index3) in topic[2]" :key="index3">
+                <a href="javascript:;"
+                  @click="change(index3)"
+                  :class="{'border': index == index3 && currentType == 2,'bg': bg_flag && topic[2][index3].isClick == true}">
+                  <span :class="{'mark': topic[2][index3].isMark == true}"></span>
+                  {{topicCount[0]+topicCount[1]+index3+1}}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </template>
+        <template v-if="this.topic[3].length != 0">
+           <div class="item">
+             <p>多选题部分</p>
+             <ul>
+               <li v-for="(list, index4) in topic[3]" :key="index4">
+                 <a href="javascript:;"
+                   @click="multiChange(index4)"
+                   :class="{'border': index == index4 && currentType == 3,'bg': bg_flag && topic[3][index4].isClick == true}">
+                   <span :class="{'mark': topic[3][index4].isMark == true}"></span>
+                   {{topicCount[0]+topicCount[1]+topicCount[2]+index4+1}}
+                 </a>
+               </li>
+             </ul>
+           </div>
+       </template>
 
               <div class="final" @click="commit()">结束考试</div>
             </div>
@@ -96,67 +104,74 @@
           </div>
           <div class="content">
             <p class="topic"><span class="number">{{number}}</span>{{showQuestion}}</p>
-            <div class="fill" v-if="currentType == 0">
-              <div v-for="(item,currentIndex) in part" :key="currentIndex">
-                <el-input placeholder="请填在此处"
-                  v-model="fillAnswer[index][currentIndex]"
-                  clearable
-                  @clear="clearFillAnswer"
-                  @blur="fillBG">
-                </el-input>
+            <template v-if="this.topic[0].length != 0">
+              <div class="fill" v-if="currentType == 0">
+                <div v-for="(item,currentIndex) in part" :key="currentIndex">
+                  <el-input placeholder="请填在此处"
+                    v-model="fillAnswer[index][currentIndex]"
+                    clearable
+                    @clear="clearFillAnswer"
+                    @blur="fillBG">
+                  </el-input>
+                </div>
+                <div class="analysis" v-if="isPractice">
+                  <ul>
+                    <li> <el-tag type="success">正确姿势：</el-tag><span class="right">{{topic[0][index].questionAnswer}}</span></li>
+                    <li><el-tag>题目解析：</el-tag></li>
+                    <li>{{topic[0][index].questionExplain == null ? '暂无解析': topic[0][index].questionExplain}}</li>
+                  </ul>
+                </div>
               </div>
-              <div class="analysis" v-if="isPractice">
-                <ul>
-                  <li> <el-tag type="success">正确姿势：</el-tag><span class="right">{{topic[0][index].questionAnswer}}</span></li>
-                  <li><el-tag>题目解析：</el-tag></li>
-                  <li>{{topic[0][index].questionExplain == null ? '暂无解析': topic[0][index].questionExplain}}</li>
-                </ul>
+            </template>
+            <template v-if="this.topic[1].length != 0">
+              <div class="judge" v-if="currentType == 1">
+                <el-radio-group v-model="judgeAnswer[index]" @change="getJudgeLabel">
+                  <el-radio :label="answerT">T</el-radio>
+                  <el-radio :label="answerF">F</el-radio>
+                </el-radio-group>
+                <div class="analysis" v-if="isPractice">
+                  <ul>
+                    <li> <el-tag type="success">正确姿势：</el-tag><span class="right">{{topic[1][index].questionAnswer}}</span></li>
+                    <li><el-tag>题目解析：</el-tag></li>
+                    <li>{{topic[1][index].questionExplain == null ? '暂无解析': topic[1][index].questionExplain}}</li>
+                  </ul>
+                </div>
               </div>
-            </div>
-            <div class="judge" v-if="currentType == 1">
-              <el-radio-group v-model="judgeAnswer[index]" @change="getJudgeLabel">
-                <el-radio :label="answerT">T</el-radio>
-                <el-radio :label="answerF">F</el-radio>
-              </el-radio-group>
-              <div class="analysis" v-if="isPractice">
-                <ul>
-                  <li> <el-tag type="success">正确姿势：</el-tag><span class="right">{{topic[1][index].questionAnswer}}</span></li>
-                  <li><el-tag>题目解析：</el-tag></li>
-                  <li>{{topic[1][index].questionExplain == null ? '暂无解析': topic[1][index].questionExplain}}</li>
-                </ul>
+            </template>
+            <template v-if="this.topic[2].length != 0">
+              <div v-if="currentType == 2">
+                <el-radio-group v-model="radio[index]" @change="getChangeLabel" >
+                  <el-radio :label="answerA">A. {{showAnswer.choiceA}}</el-radio>
+                  <el-radio :label="answerB">B. {{showAnswer.choiceB}}</el-radio>
+                  <el-radio :label="answerC">C. {{showAnswer.choiceC}}</el-radio>
+                  <el-radio :label="answerD">D. {{showAnswer.choiceD}}</el-radio>
+                </el-radio-group>
+                <div class="analysis" v-if="isPractice">
+                  <ul>
+                    <li> <el-tag type="success">正确姿势：</el-tag><span class="right">{{reduceAnswer.rightAnswer}}</span></li>
+                    <li><el-tag>题目解析：</el-tag></li>
+                    <li>{{reduceAnswer.questionExplain == null ? '暂无解析': reduceAnswer.questionExplain}}</li>
+                  </ul>
+                </div>
               </div>
-            </div>
-            <div v-if="currentType == 2">
-              <el-radio-group v-model="radio[index]" @change="getChangeLabel" >
-                <el-radio :label="answerA">A. {{showAnswer.choiceA}}</el-radio>
-                <el-radio :label="answerB">B. {{showAnswer.choiceB}}</el-radio>
-                <el-radio :label="answerC">C. {{showAnswer.choiceC}}</el-radio>
-                <el-radio :label="answerD">D. {{showAnswer.choiceD}}</el-radio>
-              </el-radio-group>
-              <div class="analysis" v-if="isPractice">
-                <ul>
-                  <li> <el-tag type="success">正确姿势：</el-tag><span class="right">{{reduceAnswer.rightAnswer}}</span></li>
-                  <li><el-tag>题目解析：</el-tag></li>
-                  <li>{{reduceAnswer.questionExplain == null ? '暂无解析': reduceAnswer.questionExplain}}</li>
-                </ul>
-              </div>
-            </div>
-             <div v-if="currentType == 3">
-               <el-checkbox-group v-model="multi[index]" @change="changeMulti" >
-                 <el-checkbox :label="answerA">A. {{showAnswer.choiceA}}</el-checkbox>
-                 <el-checkbox :label="answerB">B. {{showAnswer.choiceB}}</el-checkbox>
-                 <el-checkbox :label="answerC">C. {{showAnswer.choiceC}}</el-checkbox>
-                 <el-checkbox :label="answerD">D. {{showAnswer.choiceD}}</el-checkbox>
-               </el-checkbox-group>
-               <div class="analysis" v-if="isPractice">
-                 <ul>
-                   <li> <el-tag type="success">正确姿势：</el-tag><span class="right">{{reduceAnswer.rightAnswer}}</span></li>
-                   <li><el-tag>题目解析：</el-tag></li>
-                   <li>{{reduceAnswer.questionExplain == null ? '暂无解析': reduceAnswer.questionExplain}}</li>
-                 </ul>
+             </template>
+             <template v-if="this.topic[3].length != 0">
+               <div v-if="currentType == 3">
+                 <el-checkbox-group v-model="multi[index]" @change="changeMulti" >
+                   <el-checkbox :label="answerA">A. {{showAnswer.choiceA}}</el-checkbox>
+                   <el-checkbox :label="answerB">B. {{showAnswer.choiceB}}</el-checkbox>
+                   <el-checkbox :label="answerC">C. {{showAnswer.choiceC}}</el-checkbox>
+                   <el-checkbox :label="answerD">D. {{showAnswer.choiceD}}</el-checkbox>
+                 </el-checkbox-group>
+                 <div class="analysis" v-if="isPractice">
+                   <ul>
+                     <li> <el-tag type="success">正确姿势：</el-tag><span class="right">{{reduceAnswer.rightAnswer}}</span></li>
+                     <li><el-tag>题目解析：</el-tag></li>
+                     <li>{{reduceAnswer.questionExplain == null ? '暂无解析': reduceAnswer.questionExplain}}</li>
+                   </ul>
+                 </div>
                </div>
-             </div>
-
+              </template>
           </div>
           <div class="operation">
             <ul class="end">
@@ -259,7 +274,8 @@ export default {
       if (response.data.code === 200) {
          let dataMap = response.data.data
          this.topic = dataMap
-
+         debugger
+        // console.log("填空题啊  "+this.topic[0].length == 0)
         let reduceAnswer = this.topic[2][this.index]
         this.reduceAnswer = reduceAnswer
         //把每种题型数量及其分数
@@ -294,11 +310,29 @@ export default {
         this.fillAnswer = father
         let dataInit = this.topic[0]
         this.number = 1
+        debugger
+        if(this.topicCount[0] != 0){
+          // 有填空题，就跳到填空题的第一题
+          this.fill(0)
+          this.currentType = 0
+        }else if(this.topicCount[1] != 0){
+          dataInit = this.topic[1]
+          this.judge(0)
+          this.currentType = 1
+        }else if(this.topicCount[2] != 0){
+          dataInit = this.topic[2]
+          this.change(0)
+          this.currentType = 2
+        }else if(this.topicCount[3] != 0){
+          dataInit = this.topic[3]
+          this.multiChange(0)
+          this.currentType = 3
+        }
         this.showQuestion = dataInit[0].questionContent
-        this.showAnswer = dataInit[2]
-        this.fill(0)
-         debugger
+        this.showAnswer = dataInit[0]
+
       } else {
+        //查询失败
         this.message(true,response.data.msg,'error')
         this.topic = [[]]
 

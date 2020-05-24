@@ -66,7 +66,7 @@ export const constantRoutes = [
     {path: 'answer',
       name: 'answer',
       hidden: true,
-      component: () => import('@/views/exam/answer'),
+      component: () => import('@/views/exam/viewAnswer'),
       meta: { title: 'ExamAnswer', icon: 'dashboard' }
     },
     {path: 'record/list',

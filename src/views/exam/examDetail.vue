@@ -28,10 +28,10 @@
               <!-- <el-button type="primary" size="small">点击查看试题详情</el-button> -->
             </div>
           </template>
-          <div class="titlei">填空题 (共{{fillCnt}}题， 每题{{examData.fillScore}}分)</div>
-          <div class="titlei">判断题 (共{{judgeCnt}}题， 每题{{examData.judgeScore}}分)</div>
-          <div class="titlei">单选题 (共{{singleCnt}}题， 每题{{examData.singleScore}}分)</div>
-          <div class="titlei">多选题 (共{{multiCnt}}题， 每题{{examData.multiScore}}分)</div>
+          <div class="titlei" v-if="fillCnt != 0">填空题 (共{{fillCnt}}题， 每题{{examData.fillScore}}分)</div>
+          <div class="titlei" v-if="judgeCnt != 0">判断题 (共{{judgeCnt}}题， 每题{{examData.judgeScore}}分)</div>
+          <div class="titlei" v-if="singleCnt != 0">单选题 (共{{singleCnt}}题， 每题{{examData.singleScore}}分)</div>
+          <div class="titlei" v-if="multiCnt != 0">多选题 (共{{multiCnt}}题， 每题{{examData.multiScore}}分)</div>
         </el-collapse-item>
       </el-collapse>
     </div>
@@ -78,7 +78,7 @@ export default {
     _this.fillCnt = (exam.fillIds == null || exam.fillIds=='') ? 0 : (exam.fillIds.split(',')).length
 	},
   toAnswer(exam) {
-      this.$router.push({path: '/exam/answer', query: {exam: exam}})
+      this.$router.push({path: '/exam/answer', query: {exam: exam,isPractice: false}})
       // this.$router.push({path:"exam/answer",query:{exam: exam}})
   }
   }

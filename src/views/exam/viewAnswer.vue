@@ -5,7 +5,7 @@
      <div class="top">
        <ul class="item">
          <li><i class="iconfont icon-menufold icon20" ref="toggle" @click="slider_flag = !slider_flag"></i></li>
-         <li>欢迎admin参加 {{examData.examDesc}} 考试</li>
+         <li>欢迎{{currentUser}}参加 {{examData.examDesc}} 考试</li>
 <!--         <li @click="flag = !flag">
            <i class="iconfont icon-user icon20"></i>
            <div class="msg"  v-if="flag" @click="flag = !flag">
@@ -39,6 +39,7 @@
               </li>
             </ul>
             <div class="l-bottom">
+      <template v-if="this.topic[0].length != 0">
 			  <div class="item">
 			    <p>填空题部分</p>
 			    <ul>
@@ -47,6 +48,8 @@
 			      </li>
 			    </ul>
 			  </div>
+      </template>
+      <template v-if="this.topic[1].length != 0">
 			  <div class="item">
 			    <p>判断题部分</p>
 			    <ul>
@@ -55,6 +58,8 @@
 			      </li>
 			    </ul>
 			  </div>
+       </template>
+       <template v-if="this.topic[2].length != 0">
         <div class="item">
           <p>单选题部分</p>
           <ul>
@@ -68,6 +73,8 @@
             </li>
           </ul>
         </div>
+       </template>
+       <template v-if="this.topic[3].length != 0">
          <div class="item">
            <p>多选题部分</p>
            <ul>
@@ -81,8 +88,9 @@
              </li>
            </ul>
          </div>
-
-              <div class="final" @click="commit()">结束考试</div>
+        </template>
+              <div class="final" @click="close()" v-if="isPractice">关闭</div>
+              <div class="final" @click="commit()" v-else>结束考试</div>
             </div>
           </div>
         </transition>
@@ -92,75 +100,89 @@
           <div class="title">
             <p>{{title}}</p>
             <i class="iconfont icon-right auto-right"></i>
-            <span>全卷共{{topicCount[0] + topicCount[1] + topicCount[2]}}题  <i class="iconfont icon-time"></i>倒计时：<b>{{time}}</b>分钟</span>
+            <template v-if="isPractice">
+               <span>全卷共{{topicCount[0] + topicCount[1] + topicCount[2]}}题</span>
+            </template>
+            <template v-else>
+               <span>全卷共{{topicCount[0] + topicCount[1] + topicCount[2]}}题
+                 <i class="iconfont icon-time"></i>倒计时：<b>{{time}}</b>分钟
+               </span>
+            </template>
           </div>
           <div class="content">
             <p class="topic"><span class="number">{{number}}</span>{{showQuestion}}</p>
-            <div class="fill" v-if="currentType == 0">
-              <div v-for="(item,currentIndex) in part" :key="currentIndex">
-                <el-input placeholder="请填在此处" :disabled="isDisable"
-                  v-model="fillAnswer[index][currentIndex]"
-                  clearable
-                  @clear="clearFillAnswer"
-                  @blur="fillBG">
-                </el-input>
+            <template v-if="this.topic[0].length != 0">
+              <div class="fill" v-if="currentType == 0">
+                <div v-for="(item,currentIndex) in part" :key="currentIndex">
+                  <el-input placeholder="请填在此处" :disabled="isDisable"
+                    v-model="fillAnswer[index][currentIndex]"
+                    clearable
+                    @clear="clearFillAnswer"
+                    @blur="fillBG">
+                  </el-input>
+                </div>
+                <div class="analysis" v-if="isPractice">
+                  <ul>
+                    <li v-if="fillList[index]"> <el-tag type="success">你的答案：</el-tag><span class="right">{{fillList[index]=='?' ? '未作答':fillList[index]}}</span></li>
+                    <li> <el-tag type="success">正确答案：</el-tag><span class="right">{{topic[0][index].questionAnswer}}</span></li>
+                    <li><el-tag>题目解析：</el-tag></li>
+                    <li>{{topic[0][index].questionExplain == null ? '暂无解析': topic[0][index].questionExplain}}</li>
+                  </ul>
+                </div>
               </div>
-              <div class="analysis" v-if="isPractice">
-                <ul>
-                  <li v-if="fillList[index]"> <el-tag type="success">你的答案：</el-tag><span class="right">{{fillList[index]=='?' ? '未作答':fillList[index]}}</span></li>
-                  <li> <el-tag type="success">正确答案：</el-tag><span class="right">{{topic[0][index].questionAnswer}}</span></li>
-                  <li><el-tag>题目解析：</el-tag></li>
-                  <li>{{topic[0][index].questionExplain == null ? '暂无解析': topic[0][index].questionExplain}}</li>
-                </ul>
+            </template>
+            <template v-if="this.topic[1].length != 0">
+              <div class="judge" v-if="currentType == 1">
+                <el-radio-group v-model="judgeAnswer[index]" @change="getJudgeLabel">
+                  <el-radio :label="answerT" :disabled="isDisable">T</el-radio>
+                  <el-radio :label="answerF" :disabled="isDisable">F</el-radio>
+                </el-radio-group>
+                <div class="analysis" v-if="isPractice">
+                  <ul>
+                    <li v-if="judgeList[index]"> <el-tag type="success">你的答案：</el-tag><span class="right">{{judgeList[index] == '?' ? '未作答' : judgeList[index]}}</span></li>
+                    <li> <el-tag type="success">正确答案：</el-tag><span class="right">{{topic[1][index].questionAnswer}}</span></li>
+                    <li><el-tag>题目解析：</el-tag></li>
+                    <li>{{topic[1][index].questionExplain == null ? '暂无解析': topic[1][index].questionExplain}}</li>
+                  </ul>
+                </div>
               </div>
-            </div>
-            <div class="judge" v-if="currentType == 1">
-              <el-radio-group v-model="judgeAnswer[index]" @change="getJudgeLabel">
-                <el-radio :label="answerT" :disabled="isDisable">T</el-radio>
-                <el-radio :label="answerF" :disabled="isDisable">F</el-radio>
-              </el-radio-group>
-              <div class="analysis" v-if="isPractice">
-                <ul>
-                  <li v-if="judgeList[index]"> <el-tag type="success">你的答案：</el-tag><span class="right">{{judgeList[index] == '?' ? '未作答' : judgeList[index]}}</span></li>
-                  <li> <el-tag type="success">正确答案：</el-tag><span class="right">{{topic[1][index].questionAnswer}}</span></li>
-                  <li><el-tag>题目解析：</el-tag></li>
-                  <li>{{topic[1][index].questionExplain == null ? '暂无解析': topic[1][index].questionExplain}}</li>
-                </ul>
+            </template>
+            <template v-if="this.topic[2].length != 0">
+              <div v-if="currentType == 2">
+                <el-radio-group v-model="radio[index]" @change="getChangeLabel" >
+                  <el-radio :label="answerA" :disabled="isDisable">A. {{showAnswer.choiceA}}</el-radio>
+                  <el-radio :label="answerB" :disabled="isDisable">B. {{showAnswer.choiceB}}</el-radio>
+                  <el-radio :label="answerC" :disabled="isDisable">C. {{showAnswer.choiceC}}</el-radio>
+                  <el-radio :label="answerD" :disabled="isDisable">D. {{showAnswer.choiceD}}</el-radio>
+                </el-radio-group>
+                <div class="analysis" v-if="isPractice">
+                  <ul>
+                    <li v-if="singleList[index]"> <el-tag type="success">你的答案：</el-tag><span class="right">{{singleList[index] == '?' ? '未作答':singleList[index]}}</span></li>
+                    <li> <el-tag type="success">正确答案：</el-tag><span class="right">{{topic[2][index].questionAnswer}}</span></li>
+                    <li><el-tag>题目解析：</el-tag></li>
+                    <li>{{topic[2][index].questionExplain == null ? '暂无解析': topic[2][index].questionExplain}}</li>
+                  </ul>
+                </div>
               </div>
-            </div>
-            <div v-if="currentType == 2">
-              <el-radio-group v-model="radio[index]" @change="getChangeLabel" >
-                <el-radio :label="answerA" :disabled="isDisable">A. {{showAnswer.choiceA}}</el-radio>
-                <el-radio :label="answerB" :disabled="isDisable">B. {{showAnswer.choiceB}}</el-radio>
-                <el-radio :label="answerC" :disabled="isDisable">C. {{showAnswer.choiceC}}</el-radio>
-                <el-radio :label="answerD" :disabled="isDisable">D. {{showAnswer.choiceD}}</el-radio>
-              </el-radio-group>
-              <div class="analysis" v-if="isPractice">
-                <ul>
-                  <li v-if="singleList[index]"> <el-tag type="success">你的答案：</el-tag><span class="right">{{singleList[index] == '?' ? '未作答':singleList[index]}}</span></li>
-                  <li> <el-tag type="success">正确答案：</el-tag><span class="right">{{topic[2][index].questionAnswer}}</span></li>
-                  <li><el-tag>题目解析：</el-tag></li>
-                  <li>{{topic[2][index].questionExplain == null ? '暂无解析': topic[2][index].questionExplain}}</li>
-                </ul>
-              </div>
-            </div>
-             <div v-if="currentType == 3">
-               <el-checkbox-group v-model="multi[index]" @change="changeMulti" >
-                 <el-checkbox :label="answerA" :disabled="isDisable">A. {{showAnswer.choiceA}}</el-checkbox>
-                 <el-checkbox :label="answerB" :disabled="isDisable">B. {{showAnswer.choiceB}}</el-checkbox>
-                 <el-checkbox :label="answerC" :disabled="isDisable">C. {{showAnswer.choiceC}}</el-checkbox>
-                 <el-checkbox :label="answerD" :disabled="isDisable">D. {{showAnswer.choiceD}}</el-checkbox>
-               </el-checkbox-group>
-               <div class="analysis" v-if="isPractice">
-                 <ul>
-                   <li v-if="multiList[index]"> <el-tag type="success">你的答案：</el-tag><span class="right">{{multiList[index] == '?' ? '未作答':multiList[index]}}</span></li>
-                   <li> <el-tag type="success">正确答案：</el-tag><span class="right">{{topic[3][index].questionAnswer}}</span></li>
-                   <li><el-tag>题目解析：</el-tag></li>
-                   <li>{{topic[3][index].questionExplain == null ? '暂无解析': topic[3][index].questionExplain}}</li>
-                 </ul>
+            </template>
+            <template v-if="this.topic[3].length != 0">
+               <div v-if="currentType == 3">
+                 <el-checkbox-group v-model="multi[index]" @change="changeMulti" >
+                   <el-checkbox :label="answerA" :disabled="isDisable">A. {{showAnswer.choiceA}}</el-checkbox>
+                   <el-checkbox :label="answerB" :disabled="isDisable">B. {{showAnswer.choiceB}}</el-checkbox>
+                   <el-checkbox :label="answerC" :disabled="isDisable">C. {{showAnswer.choiceC}}</el-checkbox>
+                   <el-checkbox :label="answerD" :disabled="isDisable">D. {{showAnswer.choiceD}}</el-checkbox>
+                 </el-checkbox-group>
+                 <div class="analysis" v-if="isPractice">
+                   <ul>
+                     <li v-if="multiList[index]"> <el-tag type="success">你的答案：</el-tag><span class="right">{{multiList[index] == '?' ? '未作答':multiList[index]}}</span></li>
+                     <li> <el-tag type="success">正确答案：</el-tag><span class="right">{{topic[3][index].questionAnswer}}</span></li>
+                     <li><el-tag>题目解析：</el-tag></li>
+                     <li>{{topic[3][index].questionExplain == null ? '暂无解析': topic[3][index].questionExplain}}</li>
+                   </ul>
+                 </div>
                </div>
-             </div>
-
+            </template>
           </div>
           <div class="operation">
             <ul class="end">
@@ -177,19 +199,20 @@
 
 <script>
 import { viewExamRecord,getExamDetail,addExamRecord } from '@/api/exam'
-import { getUserId } from '@/utils/auth'
+import { getUserId,getUsername } from '@/utils/auth'
 
 export default {
   data() {
     return {
-      isDisable: true,
+      currentUser: getUsername(),
+      isDisable: false,
       answerA: 'A',
       answerB: 'B',
       answerC: 'C',
       answerD: 'D',
       answerT: 'T',
       answerF: 'F',
-      isPractice: true,
+      isPractice: false,
       startTime: null, //考试开始时间
       endTime: null, //考试结束时间
       time: null, //考试持续时间
@@ -232,10 +255,17 @@ export default {
     }
   },
   created() {
-    // this.getCookies()
-    this.getExamData()
-	  this.getTopicData()
-    this.showTime()
+    this.isPractice = this.$route.query.isPractice
+    if(this.isPractice){
+      this.isDisable = true
+      //查看考试记录
+      this.getViewData()
+    }else{
+      //考试
+      this.getExamData()
+      this.getTopicData()
+      this.showTime()
+    }
   },
 
   methods: {
@@ -248,16 +278,16 @@ export default {
     },
   getExamData(){
 		//根据考试安排ID，查询考试的相关信息
-		// let _this = this
-		// _this.startTime = new Date().getTime()
-		// _this.examData = _this.$route.query.exam   //考试安排
-  //   _this.fillScore = _this.examData.fillScore
-  //   _this.judgeScore = _this.examData.judgeScore
-  //   _this.singleScore = _this.examData.singleScore
-  //   _this.multiScore = _this.examData.multiScore
-  //   _this.time = _this.examData.totalTime
+		let _this = this
+		_this.startTime = new Date().getTime()
+		_this.examData = _this.$route.query.exam   //考试安排
+    _this.fillScore = _this.examData.fillScore
+    _this.judgeScore = _this.examData.judgeScore
+    _this.singleScore = _this.examData.singleScore
+    _this.multiScore = _this.examData.multiScore
+    _this.time = _this.examData.totalTime
 	},
- getTopicData(){
+ getViewData(){
 		let recordId = this.$route.query.recordId; //考试记录id
     let params = {
       recordId: recordId
@@ -342,12 +372,29 @@ export default {
             this.topic[2][i]["isClick"] = true
           }
         }
+        //初始化
         let dataInit = this.topic[0]
         this.number = 1
+        debugger
+        if(this.topicCount[0] != 0){
+          // 有填空题，就跳到填空题的第一题
+          this.fill(0)
+          this.currentType = 0
+        }else if(this.topicCount[1] != 0){
+          dataInit = this.topic[1]
+          this.judge(0)
+          this.currentType = 1
+        }else if(this.topicCount[2] != 0){
+          dataInit = this.topic[2]
+          this.change(0)
+          this.currentType = 2
+        }else if(this.topicCount[3] != 0){
+          dataInit = this.topic[3]
+          this.multiChange(0)
+          this.currentType = 3
+        }
         this.showQuestion = dataInit[0].questionContent
-        this.showAnswer = dataInit[2]
-        this.fill(0)
-         debugger
+        this.showAnswer = dataInit[0]
       } else {
         this.message(true,response.data.msg,'error')
         this.topic = [[]]
@@ -355,6 +402,80 @@ export default {
       }
     })
 	},
+
+  getTopicData(){
+  		let exam = this.$route.query.exam; //试卷
+  		//查询试卷的详细信息
+     getExamDetail(exam).then(response => {
+       if (response.data.code === 200) {
+          let dataMap = response.data.data
+          this.topic = dataMap
+          debugger
+         // console.log("填空题啊  "+this.topic[0].length == 0)
+         let reduceAnswer = this.topic[2][this.index]
+         this.reduceAnswer = reduceAnswer
+         //把每种题型数量及其分数
+         this.topicCount.push(this.topic[0].length)
+         this.topicCount.push(this.topic[1].length)
+         this.topicCount.push(this.topic[2].length)
+         this.topicCount.push(this.topic[3].length)
+         this.score.push((this.topic[0].length - 0)*(this.fillScore - 0)) //把每种题型总分存入score
+         this.score.push((this.topic[1].length - 0)*(this.judgeScore - 0)) //把每种题型总分存入score
+         this.score.push((this.topic[2].length - 0)*(this.singleScore - 0)) //把每种题型总分存入score
+         this.score.push((this.topic[3].length - 0)*(this.multiScore - 0)) //把每种题型总分存入score
+
+         //记录判断题答案
+         for(let i=0; i<this.topicCount[1];i++){
+           this.judgeAnswer[i] = null
+         }
+         //记录单选题答案
+         for(let i=0;i<this.topic[2].length;i++){
+           this.topic1Answer[i] = null
+         }
+         //记录多选题答案
+         for(let i=0;i<this.topic[3].length;i++){
+           this.multi[i] = []
+         }
+
+         let len = this.topicCount[0]
+         let father = []
+         for(let i = 0; i < len; i++) { //根据填空题数量创建二维空数组存放每道题答案
+         let children = [null,null,null,0]
+         father.push(children)
+         }
+         this.fillAnswer = father
+         let dataInit = this.topic[0]
+         this.number = 1
+         debugger
+         if(this.topicCount[0] != 0){
+           // 有填空题，就跳到填空题的第一题
+           this.fill(0)
+           this.currentType = 0
+         }else if(this.topicCount[1] != 0){
+           dataInit = this.topic[1]
+           this.judge(0)
+           this.currentType = 1
+         }else if(this.topicCount[2] != 0){
+           dataInit = this.topic[2]
+           this.change(0)
+           this.currentType = 2
+         }else if(this.topicCount[3] != 0){
+           dataInit = this.topic[3]
+           this.multiChange(0)
+           this.currentType = 3
+         }
+         this.showQuestion = dataInit[0].questionContent
+         this.showAnswer = dataInit[0]
+
+       } else {
+         //查询失败
+         this.message(true,response.data.msg,'error')
+         this.topic = [[]]
+
+       }
+     })
+  	},
+
     // 多选题
     multiChange(index) {
        debugger
@@ -590,6 +711,7 @@ export default {
           break
       }
     },
+
     commit() {
       if(this.time != 0) {
           this.$confirm("考试结束时间未到,是否提前交卷","友情提示",{
@@ -663,50 +785,34 @@ export default {
                 joinAnswerFill += "?" + "*"
               }
             });
+            //去掉最后一个星号
+            joinAnswerFill=(joinAnswerFill.substring(joinAnswerFill.length-1)=='*')?joinAnswerFill.substring(0,joinAnswerFill.length-1):joinAnswerFill
 
               /** 计算判断题总分 */
             let topic3Answer = this.judgeAnswer
             let joinAnswerJudge = ""
             topic3Answer.forEach((element,index) => {
-              let right = null
-              switch(element) {
-                case 1 :
-                  right = "T"
-                  break
-                case 2 :
-                  right = "F"
-                  break
-                default :
-                  right = "?"
+              let right = element
+              if(!element){
+                right = '?'
               }
-              // 题与题之间用*号分隔
-              joinAnswerJudge += right + "*"
+               joinAnswerJudge += right + "*"
              // console.log("判断题：答案："+this.topic[1][index].questionAnswer+"  用户选择了 "+right)
                   if(right == this.topic[1][index].questionAnswer) { // 当前选项与正确答案对比
                       finalScore += (this.judgeScore - 0) // 计算总分数
                 }
             })
+            //去掉最后一个星号
+            joinAnswerJudge=(joinAnswerJudge.substring(joinAnswerJudge.length-1)=='*')?joinAnswerJudge.substring(0,joinAnswerJudge.length-1):joinAnswerJudge
 
             /* 计算单选题总分 */
             let topic1Answer = this.topic1Answer
             let singleAnswer = "";
-            topic1Answer.forEach((element,index) => { //循环每道选择题根据选项计算分数
-              let right = null
-              switch(element) { //选项1,2,3,4 转换为 "A","B","C","D"
-                case 1:
-                  right = "A"
-                  break
-                case 2:
-                  right = "B"
-                  break
-                case 3:
-                  right = "C"
-                  break
-                case 4:
-                  right = "D"
-                  break
-                default:
-                  right = "?"
+            topic1Answer.forEach((element,index) => {
+              let right = element
+              console.log("单选题element  "+element)
+              if(!element){
+                right = '?'
               }
               // 题与题之间用*号分隔
               singleAnswer += right +"*";
@@ -715,42 +821,44 @@ export default {
                 finalScore += (this.singleScore - 0)  // 计算总分数
               }
             })
+            //去掉最后一个星号
+            singleAnswer=(singleAnswer.substring(singleAnswer.length-1)=='*')?singleAnswer.substring(0,singleAnswer.length-1):singleAnswer
 
             /* 计算多选题总分 */
             let multiAnswer = this.multi
             let joinAnswerMulti = "";
             multiAnswer.forEach((element,index) => { //循环每道选择题根据选项计算分数
               let right = ''
-              //选项1,2,3,4 转换为 "A","B","C","D"
-              debugger
-              if(element != null && element.length > 0) {
-               // console.log("element == "+element)
-                element = ""+element
-                if(element.includes('1')){
-                  right += 'A'
+              element = ""+element
+              if(element.includes('A') || element.includes('B') || element.includes('C') || element.includes('D')){
+                //这么做，主要是为了排序
+                if(element.includes('A')){
+                  right += 'A,'
                 }
-                if(element.includes('2')){
-                  right += 'B'
+                if(element.includes('B')){
+                  right += 'B,'
                 }
-                if(element.includes('3')){
-                  right += 'C'
+                if(element.includes('C')){
+                  right += 'C,'
                 }
-                if(element.includes('4')){
+                if(element.includes('D')){
                   right += 'D'
                 }
-                // 题与题之间用*号分隔，选项之间保留用逗号分隔
-                joinAnswerMulti += element +"*";
+                //去掉最后一个逗号
+                right=(right.substring(right.length-1)==',')?right.substring(0,right.length-1):right
               }else{
-                //未做选择，用问号?表示
                 right = '?'
-                joinAnswerMulti += "?*";
               }
+              // 题目之间用星号隔开
+              joinAnswerMulti += right + "*";
              // console.log("多选题题：答案："+this.topic[3][index].questionAnswer+"  用户选择了 "+right)
                 if(right == this.topic[3][index].questionAnswer) { // 当前选项与正确答案对比
                   finalScore += (this.multiScore - 0)  // 计算总分数
                 }
 
             })
+        //去掉最后一个星号
+        joinAnswerMulti=(joinAnswerMulti.substring(joinAnswerMulti.length-1)=='*')?joinAnswerMulti.substring(0,joinAnswerMulti.length-1):joinAnswerMulti
 
         // 计算考试分数等级
         let joinLevel = 1
@@ -802,26 +910,31 @@ export default {
     }
   },
 
-    showTime() { //倒计时
-      setInterval(() => {
-        this.time -= 1
-        if(this.time == 10) {
+  close(){
+    // 回到考试记录列表
+    this.$router.push({path: '/exam/record/list'})
+  },
+
+  showTime() { //倒计时
+    setInterval(() => {
+      this.time -= 1
+      if(this.time == 10) {
+        this.$message({
+          showClose: true,
+          type: 'error',
+          message: '注意,考试时间还剩10分钟！！！'
+        })
+        if(this.time == 0) {
+    this.commit()
           this.$message({
             showClose: true,
             type: 'error',
-            message: '注意,考试时间还剩10分钟！！！'
+            message: '时间已到，请停止答题！！！'
           })
-          if(this.time == 0) {
-			this.commit()
-            this.$message({
-              showClose: true,
-              type: 'error',
-              message: '时间已到，请停止答题！！！'
-            })
-          }
         }
-      },1000 * 60)
-    },
+      }
+    },1000 * 60)
+  },
 
 	message(ifshow,msg,type) {
 		this.$message({

@@ -1,5 +1,15 @@
 <template>
   <div class="app-container">
+    
+    <el-form :inline="true" :model="filters" class="demo-form-inline">
+          <el-form-item label="考试名称">
+            <el-input v-model="filters.keyword" placeholder="输入考试名称查询"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" icon="el-icon-search" @click="queryData">查询</el-button>
+          </el-form-item>
+    </el-form>
+    
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -117,7 +127,7 @@ export default {
         startPage: this.startPage,
         pageSize: this.pageSize,
         userId: getUserId(),
-        name: ''
+        name: this.filters.keyword
       }
       getExamRecordList(params).then(response => {
         this.list = response.data.data
@@ -127,10 +137,14 @@ export default {
         this.listLoading = false
       })
     },
-
+    
+    queryData(){
+      this.fetchData()
+    },
+    
     //查看试卷详情
     handleView(recordId){
-      this.$router.push({path: '/exam/record/viewAnswer', query: {recordId: recordId}})
+      this.$router.push({path: '/exam/record/viewAnswer', query: {recordId: recordId,isPractice: true}})
     },
 
     // 每页大小改变时触发
