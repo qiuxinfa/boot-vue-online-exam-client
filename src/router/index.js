@@ -84,6 +84,18 @@ export const constantRoutes = [
   },
 
   {
+    path: '/question',
+    component: Layout,
+    redirect: '/question/list',
+    children: [{
+      path: 'list',
+      name: 'questionManager',
+      component: () => import('@/views/exam/questionManager'),
+      meta: { title: 'questionManager', icon: 'dashboard' }
+    }]
+  },
+  
+  {
     path: '/user',
     component: Layout,
     redirect: '/user/list',
