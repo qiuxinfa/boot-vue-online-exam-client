@@ -37,7 +37,7 @@
               <span>{{(startPage - 1) * pageSize + scope.$index + 1}}</span>
           </template>
       </el-table-column>
-      <el-table-column label="题目内容"  align="center" show-overflow-tooltip="true">
+      <el-table-column label="题目内容"  align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           {{ scope.row.content }}
         </template>
@@ -89,44 +89,89 @@
         :title="titleMap[currentType]"
         :visible.sync="dialogFormVisible" >
           <div style="width:80%;margin: 0 auto">
-            <el-form :model="ruleForm" status-icon :rules="rules"  ref="ruleForm" :inline="false" label-width="90px" class="demo-ruleForm">
-                <el-form-item label="用户名"   prop="username">
-                  <el-input type="text" placeholder="用户名" auto-complete="off" v-model="ruleForm.username"></el-input>
+            <el-form :model="ruleForm" status-icon ref="ruleForm" :inline="false" label-width="90px" class="demo-ruleForm">
+                <el-form-item label="题目类型">
+                  <el-select v-model="activeName" placeholder="请选择题型">
+                    <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
                 </el-form-item>
-                <el-form-item label="邮箱" prop="email">
-                  <el-input type="text" placeholder="邮箱" auto-complete="off" v-model="ruleForm.email"></el-input>
+                <el-form-item label="题目" prop="questionContent" :rules="[{ required: true, message: '请输入题目'},{ min: 1, max: 200, message: '长度在 1 到 200 个字符'}]">
+                  <el-input type="textarea" placeholder="输入题目,如:从计算机网络系统组成的角度看，计算机网络可以分为()和()。注意需要考生答题部分一定要用括号（英文半角）括起来。"
+                      auto-complete="off" v-model="ruleForm.questionContent"></el-input>
                 </el-form-item>
-               <el-form-item label="头像"   prop="photoUrl">
-               <el-upload
-                   class="avatar-uploader"
-                   action="xxx"
-                   :show-file-list="false"
-                   :on-success="handleAvatarSuccess"
-                   :before-upload="beforeAvatarUpload">
-                   <img v-if="ruleForm.photoUrl" :src="ruleForm.photoUrl" class="avatar">
-                   <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                 </el-upload>
-               </el-form-item>
-                </el-form-item>
-                  <el-form-item label="角色" prop="role">
-                    <el-select v-model="ruleForm.roleName" filterable placeholder="请选择">
+                <template v-if="activeName=='first'">
+                  <el-form-item label="正确答案" prop="questionAnswer" :rules="[{ required: true, message: '请输入题目'},{ min: 1, max: 100, message: '长度在 1 到 100 个字符'}]">
+                    <el-input  type="text" placeholder="每两个个空之间的答案用英文逗号分隔" auto-complete="off" v-model="ruleForm.questionAnswer"></el-input>
+                  </el-form-item>
+                </template>
+                <template v-if="activeName == 'second'" >
+                  <el-form-item label="正确答案" prop="questionAnswer" :rules="{ required: true, message: '请选择答案', trigger: 'change' }">
+                    <el-select v-model="ruleForm.questionAnswer" filterable placeholder="请选择答案">
                       <el-option
-                        v-for="item in roles"
-                        :key="item.name"
+                        v-for="item in judgeOptions"
+                        :key="item.id"
                         :label="item.name"
                         :value="item.id">
                       </el-option>
                    </el-select>
                   </el-form-item>
-                  <el-form-item label="是否启用">
-                    <el-switch
-                      v-model="ruleForm.enable"
-                      active-color="#13ce66"
-                      inactive-color="#ff4949"
-                      :active-value="activeValue"
-                      :inactive-value="inactiveValue">
-                    </el-switch>
-                  </el-form-item>
+                </template>
+               <template v-if="activeName == 'third' || activeName == 'fourth'" >
+                 <el-form-item label="选项A" prop="choiceA" :rules="[{ required: true, message: '请输入题目'},{ min: 1, max: 100, message: '长度在 1 到 100 个字符'}]">
+                   <el-input  type="text" placeholder="输入选项内容" auto-complete="off" v-model="ruleForm.choiceA"></el-input>
+                 </el-form-item>
+                 <el-form-item label="选项B" prop="choiceB" :rules="[{ required: true, message: '请输入题目'},{ min: 1, max: 100, message: '长度在 1 到 100 个字符'}]">
+                   <el-input  type="text" placeholder="输入选项内容" auto-complete="off" v-model="ruleForm.choiceB"></el-input>
+                 </el-form-item>
+                 <el-form-item label="选项C" prop="choiceC" :rules="[{ required: true, message: '请输入题目'},{ min: 1, max: 100, message: '长度在 1 到 100 个字符'}]">
+                   <el-input  type="text" placeholder="输入选项内容" auto-complete="off" v-model="ruleForm.choiceC"></el-input>
+                 </el-form-item>
+                 <el-form-item label="选项D" prop="choiceD" :rules="[{ required: true, message: '请输入题目'},{ min: 1, max: 100, message: '长度在 1 到 100 个字符'}]">
+                   <el-input  type="text" placeholder="输入选项内容" auto-complete="off" v-model="ruleForm.choiceD"></el-input>
+                 </el-form-item>
+               </template>
+               <template v-if="activeName == 'third'">
+                 <el-form-item  label="正确答案" prop="questionAnswer" :rules="{ required: true, message: '请选择答案', trigger: 'change' }">
+                   <el-select v-model="ruleForm.questionAnswer" filterable placeholder="请选择答案">
+                     <el-option
+                       v-for="item in singleOptions"
+                       :key="item.id"
+                       :label="item.name"
+                       :value="item.id">
+                     </el-option>
+                  </el-select>
+                 </el-form-item>
+               </template>
+               <template v-if="activeName == 'fourth'">
+                 <el-form-item  label="正确答案" prop="multi" :rules="{ required: true, message: '请选择答案', trigger: 'blur' }">
+                   <el-select multiple v-model="ruleForm.multi" filterable placeholder="请选择答案">
+                     <el-option
+                       v-for="item in singleOptions"
+                       :key="item.id"
+                       :label="item.name"
+                       :value="item.id">
+                     </el-option>
+                  </el-select>
+                 </el-form-item>
+               </template>
+                <el-form-item label="题目难度" prop="questionLevel" :rules="[{ required: true, message: '请选择题目难度', trigger: 'change' }]">
+                  <el-select v-model="ruleForm.questionLevel" filterable placeholder="请选择">
+                    <el-option
+                      v-for="item in levels"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id">
+                    </el-option>
+                 </el-select>
+                </el-form-item>
+                <el-form-item label="答案解析" prop="questionExplain" :rules="[{max: 200, message: '最多输入 200 个字符',trigger: 'blur' }]">
+                  <el-input type="textarea" placeholder="解析答案,方便理解" auto-complete="off" v-model="ruleForm.questionExplain"></el-input>
+                </el-form-item>
               </el-form>
            </div>
            <div slot="footer" class="dialog-footer">
@@ -140,7 +185,7 @@
 </template>
 
 <script>
-import { getFillList,getJudgeList,getSingleList,getMultiList } from '@/api/question'
+import { getFillList,getJudgeList,getSingleList,getMultiList,addFill,addJudge,addSingle,addMulti } from '@/api/question'
 import { getUserId } from '@/utils/auth'
 
 export default {
@@ -160,6 +205,28 @@ export default {
       	keyword: ''
       },
       activeName: 'first',
+      options: [
+        {value:'first',label:'填空题'},
+        {value:'second',label:'判断题'},
+        {value:'third',label:'单选题'},
+        {value:'fourth',label:'多选题'}
+      ],
+      judgeOptions: [
+        {id: 'T',name: '正确'},
+        {id: 'F',name: '错误'}
+      ],
+      singleOptions: [
+       {id: 'A',name: 'A'},
+       {id: 'B',name: 'B'},
+       {id: 'C',name: 'C'},
+       {id: 'D',name: 'D'}
+      ],
+      //题目难度等级，最好是到后台查数据字典，这里简单起见，没有这么做了
+      levels: [
+        {id: 1,name: '简单'},
+        {id: 2,name: '中等'},
+        {id: 3,name: '困难'}
+      ],
       listLoading: false, // 加载等待
       pageSizes: [6, 10, 20, 40],
       startPage: 1,
@@ -171,14 +238,34 @@ export default {
       dialogFormVisible:false,
       ruleForm: {
         id: '',
-      	username: '',
-      	password: '123456',  //默认密码
-      	// pass2: '',
-      	email: '',
-      	enable: 1,
-        photoUrl: '',
-      	roleName: ''
+      	questionContent: '',
+      	questionAnswer: '',
+      	questionLevel: '',
+        questionExplain: '',
+        multi: [],  //多选题选项答案，用数组临时存储
+        choiceA: '',
+        choiceB: '',
+        choiceC: '',
+        choiceD: ''
       },
+      // 表单验证
+      // rules: {
+      //   questionContent: [
+      //     { required: true, message: '请输入题目'},
+      //     { min: 1, max: 200, message: '长度在 1 到 200 个字符'}
+      //   ],
+      //   questionAnswer: [
+      //     { required: true, message: '请输入题目的答案' },
+      //     { min: 1, max: 100, message: '长度在 1 到 100 个字符'}
+      //   ],
+      //   questionLevel: [
+      //     { required: true, message: '请选择题目难度', trigger: 'change' }
+      //   ],
+      //   questionExplain: [
+      //     {max: 200, message: '最多输入 200 个字符'}
+      //   ],
+      // },
+
       //新增or编辑弹框标题(根据点击的新增or编辑按钮显示不同的标题)
       titleMap: {
           add:'新增',
@@ -241,6 +328,156 @@ export default {
       //显示弹框
       this.dialogFormVisible = true;
      },
+
+    // 表单提交
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+      	if (valid) {
+          // 新增
+          if(this.currentType == 'add'){
+              // debugger
+              let doAdd = addFill
+              if(this.activeName == 'second'){
+                doAdd = addJudge
+              }else if(this.activeName == 'third'){
+                doAdd = addSingle
+              }else if(this.activeName == 'fourth'){
+               // console.log("多选题答案  "+this.multi)
+               let answer = this.ruleForm.multi
+               this.ruleForm.questionAnswer = answer.join(",")
+               doAdd = addMulti
+              }
+              //这里主要是为了复用代码，没有分别写一个函数，通过这种方式，可以动态改变要调用的方法
+              doAdd(this.ruleForm).then(response => {
+                let msg = "添加失败"
+                let msgType = 'error'
+                if(response.data.code == 200){
+                  msg = "添加成功"
+                  msgType = 'success'
+                }
+                this.$message({
+                          message: msg,
+                          type: msgType
+                        });
+                // 关闭弹窗
+                this.dialogFormVisible = false
+                //刷新列表
+                this.fetchData()
+              }).catch(err =>{
+                this.$message({
+                          message: '添加失败',
+                          type: 'error'
+                        });
+              })
+
+          }else if(this.currentType == 'edit'){
+           // this.doUpdate()
+          }
+      	} else {
+      		this.$message({message: '表单有必填项没填',
+      		      type: 'error'});
+      		return false
+      	}
+      })
+
+    },
+
+    //添加填空题
+    // addQuestion(){
+    //    addFill(this.ruleForm).then(response => {
+    //      let msg = "添加失败"
+    //      let msgType = 'error'
+    //      if(response.data.code == 200){
+    //        msg = "添加成功"
+    //        msgType = 'success'
+    //      }
+    //      this.$message({
+    //                message: msg,
+    //                type: msgType
+    //              });
+    //      // 关闭弹窗
+    //      this.dialogFormVisible = false
+    //      //刷新列表
+    //      this.fetchData()
+    //    }).catch(err =>{
+    //      this.$message({
+    //                message: '添加失败',
+    //                type: 'error'
+    //              });
+    //    })
+    // },
+    //添加判断题
+    // addJudgeQuestion(){
+    //    addJudge(this.ruleForm).then(response => {
+    //      let msg = "添加失败"
+    //      let msgType = 'error'
+    //      if(response.data.code == 200){
+    //        msg = "添加成功"
+    //        msgType = 'success'
+    //      }
+    //      this.$message({
+    //                message: msg,
+    //                type: msgType
+    //              });
+    //      // 关闭弹窗
+    //      this.dialogFormVisible = false
+    //      //刷新列表
+    //      this.fetchData()
+    //    }).catch(err =>{
+    //      this.$message({
+    //                message: '添加失败',
+    //                type: 'error'
+    //              });
+    //    })
+    // },
+    // //添加单选题
+    // addSingleQuestion(){
+    //    addSingle(this.ruleForm).then(response => {
+    //      let msg = "添加失败"
+    //      let msgType = 'error'
+    //      if(response.data.code == 200){
+    //        msg = "添加成功"
+    //        msgType = 'success'
+    //      }
+    //      this.$message({
+    //                message: msg,
+    //                type: msgType
+    //              });
+    //      // 关闭弹窗
+    //      this.dialogFormVisible = false
+    //      //刷新列表
+    //      this.fetchData()
+    //    }).catch(err =>{
+    //      this.$message({
+    //                message: '添加失败',
+    //                type: 'error'
+    //              });
+    //    })
+    // },
+    // //添加多选题
+    // addMultiQuestion(){
+    //    addMulti(this.ruleForm).then(response => {
+    //      let msg = "添加失败"
+    //      let msgType = 'error'
+    //      if(response.data.code == 200){
+    //        msg = "添加成功"
+    //        msgType = 'success'
+    //      }
+    //      this.$message({
+    //                message: msg,
+    //                type: msgType
+    //              });
+    //      // 关闭弹窗
+    //      this.dialogFormVisible = false
+    //      //刷新列表
+    //      this.fetchData()
+    //    }).catch(err =>{
+    //      this.$message({
+    //                message: '添加失败',
+    //                type: 'error'
+    //              });
+    //    })
+    // },
     // 每页大小改变时触发
     handleSizeChange (val) {
     	this.pageSize = val

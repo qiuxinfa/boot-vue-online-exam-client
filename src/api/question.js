@@ -31,3 +31,35 @@ export function getMultiList(data) {
     params: data
   })
 }
+
+export function addFill(data) {
+  return request({
+    url: '/fill/add',
+    method: 'post',
+    data
+  })
+}
+
+export function addJudge(data) {
+  return request({
+    url: '/judge/add',
+    method: 'post',
+    data
+  })
+}
+
+export function addSingle(data) {
+  return request({
+    url: '/single/add',
+    method: 'post',
+    data
+  })
+}
+
+export function addMulti(data) {
+  return request({
+    url: '/multi/add',
+    method: 'post',
+    data
+  })
+}
