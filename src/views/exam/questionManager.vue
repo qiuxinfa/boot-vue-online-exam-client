@@ -39,7 +39,7 @@
       </el-table-column>
       <el-table-column label="题目内容"  align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          {{ scope.row.content }}
+          {{ scope.row.questionContent }}
         </template>
       </el-table-column>
       <el-table-column label="创建时间"  align="center">
@@ -47,14 +47,14 @@
           <span>{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="更新时间"  align="center">
+<!--      <el-table-column label="更新时间"  align="center">
         <template slot-scope="scope">
           {{ scope.row.updateTime }}
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="难度等级" align="center">
         <template slot-scope="scope">
-          {{ scope.row.level }}
+          {{ scope.row.questionLevelStr }}
         </template>
       </el-table-column>
       <el-table-column
@@ -65,7 +65,7 @@
               <el-button
                 size="mini"
                 type="primary" icon="el-icon-view"
-                @click="handleView(scope.row.id)">查看题目</el-button>
+                @click="handleView(scope.row)">查看题目</el-button>
             </template>
       </el-table-column>
     </el-table>
@@ -91,7 +91,7 @@
           <div style="width:80%;margin: 0 auto">
             <el-form :model="ruleForm" status-icon ref="ruleForm" :inline="false" label-width="90px" class="demo-ruleForm">
                 <el-form-item label="题目类型">
-                  <el-select v-model="activeName" placeholder="请选择题型">
+                  <el-select v-model="activeName" placeholder="请选择题型" @blur="changeType" :disabled="currentType=='view'">
                     <el-option
                       v-for="item in options"
                       :key="item.value"
@@ -102,16 +102,18 @@
                 </el-form-item>
                 <el-form-item label="题目" prop="questionContent" :rules="[{ required: true, message: '请输入题目'},{ min: 1, max: 200, message: '长度在 1 到 200 个字符'}]">
                   <el-input type="textarea" placeholder="输入题目,如:从计算机网络系统组成的角度看，计算机网络可以分为()和()。注意需要考生答题部分一定要用括号（英文半角）括起来。"
-                      auto-complete="off" v-model="ruleForm.questionContent"></el-input>
+                      auto-complete="off" v-model="ruleForm.questionContent" :disabled="currentType=='view'"></el-input>
                 </el-form-item>
+                <!-- 填空题 -->
                 <template v-if="activeName=='first'">
                   <el-form-item label="正确答案" prop="questionAnswer" :rules="[{ required: true, message: '请输入题目'},{ min: 1, max: 100, message: '长度在 1 到 100 个字符'}]">
-                    <el-input  type="text" placeholder="每两个个空之间的答案用英文逗号分隔" auto-complete="off" v-model="ruleForm.questionAnswer"></el-input>
+                    <el-input  type="text" placeholder="每两个个空之间的答案用英文逗号分隔" auto-complete="off" v-model="ruleForm.questionAnswer" :disabled="currentType=='view'"></el-input>
                   </el-form-item>
                 </template>
+                <!-- 判断题 -->
                 <template v-if="activeName == 'second'" >
                   <el-form-item label="正确答案" prop="questionAnswer" :rules="{ required: true, message: '请选择答案', trigger: 'change' }">
-                    <el-select v-model="ruleForm.questionAnswer" filterable placeholder="请选择答案">
+                    <el-select v-model="ruleForm.questionAnswer" filterable placeholder="请选择答案" :disabled="currentType=='view'">
                       <el-option
                         v-for="item in judgeOptions"
                         :key="item.id"
@@ -121,23 +123,25 @@
                    </el-select>
                   </el-form-item>
                 </template>
+                <!-- 单选、多选公共部分 -->
                <template v-if="activeName == 'third' || activeName == 'fourth'" >
-                 <el-form-item label="选项A" prop="choiceA" :rules="[{ required: true, message: '请输入题目'},{ min: 1, max: 100, message: '长度在 1 到 100 个字符'}]">
-                   <el-input  type="text" placeholder="输入选项内容" auto-complete="off" v-model="ruleForm.choiceA"></el-input>
+                 <el-form-item label="选项A" prop="choiceA" :rules="[{ required: true, message: '输入选项内容'},{ min: 1, max: 100, message: '长度在 1 到 100 个字符'}]">
+                   <el-input  type="text" placeholder="输入选项内容" auto-complete="off" v-model="ruleForm.choiceA" :disabled="currentType=='view'"></el-input>
                  </el-form-item>
-                 <el-form-item label="选项B" prop="choiceB" :rules="[{ required: true, message: '请输入题目'},{ min: 1, max: 100, message: '长度在 1 到 100 个字符'}]">
-                   <el-input  type="text" placeholder="输入选项内容" auto-complete="off" v-model="ruleForm.choiceB"></el-input>
+                 <el-form-item label="选项B" prop="choiceB" :rules="[{ required: true, message: '输入选项内容'},{ min: 1, max: 100, message: '长度在 1 到 100 个字符'}]">
+                   <el-input  type="text" placeholder="输入选项内容" auto-complete="off" v-model="ruleForm.choiceB" :disabled="currentType=='view'"></el-input>
                  </el-form-item>
-                 <el-form-item label="选项C" prop="choiceC" :rules="[{ required: true, message: '请输入题目'},{ min: 1, max: 100, message: '长度在 1 到 100 个字符'}]">
-                   <el-input  type="text" placeholder="输入选项内容" auto-complete="off" v-model="ruleForm.choiceC"></el-input>
+                 <el-form-item label="选项C" prop="choiceC" :rules="[{ required: true, message: '输入选项内容'},{ min: 1, max: 100, message: '长度在 1 到 100 个字符'}]">
+                   <el-input  type="text" placeholder="输入选项内容" auto-complete="off" v-model="ruleForm.choiceC" :disabled="currentType=='view'"></el-input>
                  </el-form-item>
-                 <el-form-item label="选项D" prop="choiceD" :rules="[{ required: true, message: '请输入题目'},{ min: 1, max: 100, message: '长度在 1 到 100 个字符'}]">
-                   <el-input  type="text" placeholder="输入选项内容" auto-complete="off" v-model="ruleForm.choiceD"></el-input>
+                 <el-form-item label="选项D" prop="choiceD" :rules="[{ required: true, message: '输入选项内容'},{ min: 1, max: 100, message: '长度在 1 到 100 个字符'}]">
+                   <el-input  type="text" placeholder="输入选项内容" auto-complete="off" v-model="ruleForm.choiceD" :disabled="currentType=='view'"></el-input>
                  </el-form-item>
                </template>
+               <!-- 单选 -->
                <template v-if="activeName == 'third'">
                  <el-form-item  label="正确答案" prop="questionAnswer" :rules="{ required: true, message: '请选择答案', trigger: 'change' }">
-                   <el-select v-model="ruleForm.questionAnswer" filterable placeholder="请选择答案">
+                   <el-select v-model="ruleForm.questionAnswer" filterable placeholder="请选择答案" :disabled="currentType=='view'">
                      <el-option
                        v-for="item in singleOptions"
                        :key="item.id"
@@ -147,12 +151,13 @@
                   </el-select>
                  </el-form-item>
                </template>
+               <!-- 多选 -->
                <template v-if="activeName == 'fourth'">
-                 <el-form-item  label="正确答案" prop="multi" :rules="{ required: true, message: '请选择答案', trigger: 'blur' }">
-                   <el-select multiple v-model="ruleForm.multi" filterable placeholder="请选择答案">
+                 <el-form-item  label="正确答案" prop="multi" :rules="{ required: true, message: '请选择答案', trigger: 'change' }">
+                   <el-select multiple v-model="ruleForm.multi" filterable placeholder="请选择答案" :disabled="currentType=='view'">
                      <el-option
                        v-for="item in singleOptions"
-                       :key="item.id"
+                       :key="item.name"
                        :label="item.name"
                        :value="item.id">
                      </el-option>
@@ -160,7 +165,7 @@
                  </el-form-item>
                </template>
                 <el-form-item label="题目难度" prop="questionLevel" :rules="[{ required: true, message: '请选择题目难度', trigger: 'change' }]">
-                  <el-select v-model="ruleForm.questionLevel" filterable placeholder="请选择">
+                  <el-select v-model="ruleForm.questionLevel" filterable placeholder="请选择" :disabled="currentType=='view'">
                     <el-option
                       v-for="item in levels"
                       :key="item.id"
@@ -170,13 +175,18 @@
                  </el-select>
                 </el-form-item>
                 <el-form-item label="答案解析" prop="questionExplain" :rules="[{max: 200, message: '最多输入 200 个字符',trigger: 'blur' }]">
-                  <el-input type="textarea" placeholder="解析答案,方便理解" auto-complete="off" v-model="ruleForm.questionExplain"></el-input>
+                  <el-input type="textarea" placeholder="解析答案,方便理解" auto-complete="off" v-model="ruleForm.questionExplain" :disabled="currentType=='view'"></el-input>
                 </el-form-item>
               </el-form>
            </div>
            <div slot="footer" class="dialog-footer">
-             <el-button @click="dialogFormVisible = false">取 消</el-button>
-             <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+             <template v-if="currentType=='view'">
+               <el-button @click="dialogFormVisible = false">关 闭</el-button>
+             </template>
+             <template v-else>
+               <el-button @click="dialogFormVisible = false">取 消</el-button>
+               <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+             </template>
            </div>
    </el-dialog>
 
@@ -248,24 +258,6 @@ export default {
         choiceC: '',
         choiceD: ''
       },
-      // 表单验证
-      // rules: {
-      //   questionContent: [
-      //     { required: true, message: '请输入题目'},
-      //     { min: 1, max: 200, message: '长度在 1 到 200 个字符'}
-      //   ],
-      //   questionAnswer: [
-      //     { required: true, message: '请输入题目的答案' },
-      //     { min: 1, max: 100, message: '长度在 1 到 100 个字符'}
-      //   ],
-      //   questionLevel: [
-      //     { required: true, message: '请选择题目难度', trigger: 'change' }
-      //   ],
-      //   questionExplain: [
-      //     {max: 200, message: '最多输入 200 个字符'}
-      //   ],
-      // },
-
       //新增or编辑弹框标题(根据点击的新增or编辑按钮显示不同的标题)
       titleMap: {
           add:'新增',
@@ -312,8 +304,19 @@ export default {
       // console.log("tab =="+tab+ " event =="+event)
     },
     //查看题目详情
-    handleView(recordId){
-     // this.$router.push({path: '/exam/record/viewAnswer', query: {recordId: recordId,isPractice: true}})
+    handleView(obj){
+      this.currentType = 'view'
+      debugger
+      this.ruleForm = obj
+      if(!obj.questionExplain){
+        this.ruleForm.questionExplain = '暂无解析'
+      }
+      if(this.activeName == 'fourth'){
+        //给多选题答案赋值
+        this.ruleForm.multi = obj.questionAnswer.split(",")
+      }
+      //显示弹框
+      this.dialogFormVisible = true;
     },
     //添加
     handelAdd() {
@@ -328,7 +331,14 @@ export default {
       //显示弹框
       this.dialogFormVisible = true;
      },
+    changeType(val){
+      // let t = this.activeName
+      debugger
+      // 要清除单选的值，不然切换到多选时只能 只读，不能修改，
+      this.ruleForm.questionAnswer = ''
+      // console.log("当前值 "+val)
 
+    },
     // 表单提交
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
@@ -349,6 +359,8 @@ export default {
               }
               //这里主要是为了复用代码，没有分别写一个函数，通过这种方式，可以动态改变要调用的方法
               doAdd(this.ruleForm).then(response => {
+                // 不管成功还是失败，清除答案
+               // this.ruleForm.questionAnswer = ''
                 let msg = "添加失败"
                 let msgType = 'error'
                 if(response.data.code == 200){
@@ -382,102 +394,6 @@ export default {
 
     },
 
-    //添加填空题
-    // addQuestion(){
-    //    addFill(this.ruleForm).then(response => {
-    //      let msg = "添加失败"
-    //      let msgType = 'error'
-    //      if(response.data.code == 200){
-    //        msg = "添加成功"
-    //        msgType = 'success'
-    //      }
-    //      this.$message({
-    //                message: msg,
-    //                type: msgType
-    //              });
-    //      // 关闭弹窗
-    //      this.dialogFormVisible = false
-    //      //刷新列表
-    //      this.fetchData()
-    //    }).catch(err =>{
-    //      this.$message({
-    //                message: '添加失败',
-    //                type: 'error'
-    //              });
-    //    })
-    // },
-    //添加判断题
-    // addJudgeQuestion(){
-    //    addJudge(this.ruleForm).then(response => {
-    //      let msg = "添加失败"
-    //      let msgType = 'error'
-    //      if(response.data.code == 200){
-    //        msg = "添加成功"
-    //        msgType = 'success'
-    //      }
-    //      this.$message({
-    //                message: msg,
-    //                type: msgType
-    //              });
-    //      // 关闭弹窗
-    //      this.dialogFormVisible = false
-    //      //刷新列表
-    //      this.fetchData()
-    //    }).catch(err =>{
-    //      this.$message({
-    //                message: '添加失败',
-    //                type: 'error'
-    //              });
-    //    })
-    // },
-    // //添加单选题
-    // addSingleQuestion(){
-    //    addSingle(this.ruleForm).then(response => {
-    //      let msg = "添加失败"
-    //      let msgType = 'error'
-    //      if(response.data.code == 200){
-    //        msg = "添加成功"
-    //        msgType = 'success'
-    //      }
-    //      this.$message({
-    //                message: msg,
-    //                type: msgType
-    //              });
-    //      // 关闭弹窗
-    //      this.dialogFormVisible = false
-    //      //刷新列表
-    //      this.fetchData()
-    //    }).catch(err =>{
-    //      this.$message({
-    //                message: '添加失败',
-    //                type: 'error'
-    //              });
-    //    })
-    // },
-    // //添加多选题
-    // addMultiQuestion(){
-    //    addMulti(this.ruleForm).then(response => {
-    //      let msg = "添加失败"
-    //      let msgType = 'error'
-    //      if(response.data.code == 200){
-    //        msg = "添加成功"
-    //        msgType = 'success'
-    //      }
-    //      this.$message({
-    //                message: msg,
-    //                type: msgType
-    //              });
-    //      // 关闭弹窗
-    //      this.dialogFormVisible = false
-    //      //刷新列表
-    //      this.fetchData()
-    //    }).catch(err =>{
-    //      this.$message({
-    //                message: '添加失败',
-    //                type: 'error'
-    //              });
-    //    })
-    // },
     // 每页大小改变时触发
     handleSizeChange (val) {
     	this.pageSize = val

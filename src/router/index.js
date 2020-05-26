@@ -94,7 +94,17 @@ export const constantRoutes = [
       meta: { title: 'questionManager', icon: 'dashboard' }
     }]
   },
-  
+  {
+    path: '/paper',
+    component: Layout,
+    redirect: '/paper/list',
+    children: [{
+      path: 'list',
+      name: 'paperManager',
+      component: () => import('@/views/exam/paperManager'),
+      meta: { title: 'paperManager', icon: 'dashboard' }
+    }]
+  },
   {
     path: '/user',
     component: Layout,
@@ -106,7 +116,7 @@ export const constantRoutes = [
       meta: { title: 'UserList', icon: 'dashboard' }
     }]
   },
-  
+
   {
     path: '/',
     component: Layout,
