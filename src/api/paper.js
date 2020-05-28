@@ -8,10 +8,18 @@ export function getPaperList(data) {
   })
 }
 
-export function viewExamRecord(data) {
+export function viewPaper(data) {
   return request({
     url: '/paper/view',
     method: 'get',
     params: data
+  })
+}
+
+export function addPaper(data) {
+  return request({
+    url: '/paper/add',
+    method: 'post',
+    data
   })
 }

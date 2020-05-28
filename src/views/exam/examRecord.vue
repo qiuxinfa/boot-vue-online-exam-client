@@ -53,7 +53,7 @@
           <span>{{ scope.row.finishTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="考试时长(分钟)" align="center">
+      <el-table-column label="考试实际时间(分钟)" align="center">
         <template slot-scope="scope">
           {{ scope.row.costTime }}
         </template>

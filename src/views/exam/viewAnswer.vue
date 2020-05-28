@@ -405,6 +405,8 @@ export default {
 
   getTopicData(){
   		let exam = this.$route.query.exam; //试卷
+      exam.createTime = null
+      exam.updateTime = null
   		//查询试卷的详细信息
      getExamDetail(exam).then(response => {
        if (response.data.code === 200) {
