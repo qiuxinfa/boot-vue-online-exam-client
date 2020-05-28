@@ -23,3 +23,11 @@ export function addPaper(data) {
     data
   })
 }
+
+//获取各种题型数量
+export function getCount() {
+  return request({
+    url: '/paper/count',
+    method: 'get'
+  })
+}

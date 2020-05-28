@@ -160,7 +160,7 @@
 </template>
 
 <script>
-import { getPaperList,addPaper } from '@/api/paper'
+import { getPaperList,addPaper,getCount } from '@/api/paper'
 import { getUserId } from '@/utils/auth'
 
 export default {
@@ -183,6 +183,58 @@ export default {
             callback()
         }
     };
+    //校验填空题数量
+    let validFill=(rule,value,callback)=>{
+        let reg=/^(0|[1-9][0-9]*)$/
+        if(!reg.test(value)){
+          callback(new Error('只能填非负整数'))
+        }else{
+          if(this.fillCount && this.fillCount < value){
+            callback(new Error('填空题最多只有 '+this.fillCount +" 题"))
+          }else{
+            callback()
+          }
+        }
+    };
+    //校验判断题数量
+    let validJudge=(rule,value,callback)=>{
+        let reg=/^(0|[1-9][0-9]*)$/
+        if(!reg.test(value)){
+          callback(new Error('只能填非负整数'))
+        }else{
+          if(this.judgeCount && this.judgeCount < value){
+            callback(new Error('判断题最多只有 '+this.judgeCount +" 题"))
+          }else{
+            callback()
+          }
+        }
+    }; 
+    //校验单选题数量
+    let validSingle=(rule,value,callback)=>{
+        let reg=/^(0|[1-9][0-9]*)$/
+        if(!reg.test(value)){
+          callback(new Error('只能填非负整数'))
+        }else{
+          if(this.singleCount && this.singleCount < value){
+            callback(new Error('单选题最多只有 '+this.singleCount +" 题"))
+          }else{
+            callback()
+          }
+        }
+    };
+    //校验多选题数量
+    let validMulti=(rule,value,callback)=>{
+        let reg=/^(0|[1-9][0-9]*)$/
+        if(!reg.test(value)){
+          callback(new Error('只能填非负整数'))
+        }else{
+          if(this.multiCount && this.multiCount < value){
+            callback(new Error('多选题最多只有 '+this.multiCount +" 题"))
+          }else{
+            callback()
+          }
+        }
+    };           
     //校验分数
     let validcodeScore=(rule,value,callback)=>{
         let reg=/^(0|[1-9][0-9]*)+(.[0-9]{1,2})?$/
@@ -224,19 +276,19 @@ export default {
         ],
         fillNumber: [
            { required: true, message: '请输入填空题数量', trigger: 'blur' },
-            {validator:validcodeNumber, trigger: 'blur'}
+            {validator:validFill, trigger: 'blur'}
         ],
         judgeNumber: [
            { required: true, message: '请输入填空题数量', trigger: 'blur' },
-            {validator:validcodeNumber, trigger: 'blur'}
+            {validator:validJudge, trigger: 'blur'}
         ],
         singleNumber: [
            { required: true, message: '请输入填空题数量', trigger: 'blur' },
-            {validator:validcodeNumber, trigger: 'blur'}
+            {validator:validSingle, trigger: 'blur'}
         ],
         multiNumber: [
            { required: true, message: '请输入填空题数量', trigger: 'blur' },
-           {validator:validcodeNumber, trigger: 'blur'}
+           {validator:validMulti, trigger: 'blur'}
         ],
         fillScore: [
            { required: true, message: '请输入分数', trigger: 'blur' },
@@ -266,8 +318,10 @@ export default {
           view: "查看信息",
           edit: "修改信息"
       },
-      roles: [], //角色列表
-
+      fillCount: null,  // 数据库中填空题的数量
+      judgeCount: null,
+      singleCount: null,
+      multiCount: null
     }
   },
   created() {
@@ -320,9 +374,20 @@ export default {
     },
      //新增
     handelAdd() {
+
       this.currentType = 'add'
       //显示弹框
-      this.dialogFormVisible = true;
+      this.dialogFormVisible = true
+      //获取各种题型的数量
+      getCount().then(response => {
+        this.fillCount = response.data.data.fillCount
+        this.judgeCount = response.data.data.judgeCount
+        this.singleCount = response.data.data.singleCount
+        this.multiCount = response.data.data.multiCount        
+      }).catch(err =>{
+        this.listLoading = false
+      })
+
      },
      //编辑
     handleEdit(obj) {
