@@ -227,7 +227,7 @@ export const constantRoutes = [
     component: Layout,
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
+        path: 'https://github.com/qiuxinfa/boot-vue-online-exam-sever',
         meta: { title: 'External Link', icon: 'link' }
       }
     ]

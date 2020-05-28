@@ -1,6 +1,7 @@
 import { login, logout, getInfo,refreshToken } from '@/api/user'
 import { setUserId,setUsername, setToken, removeToken, setTokenExpriredTime,getTokenExpriredTime } from '@/utils/auth'
 import { resetRouter } from '@/router'
+import {  Message } from 'element-ui'
 
 const state = {
   token: '',
@@ -34,22 +35,34 @@ const actions = {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response.data
         debugger
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
-        commit('SET_TOKEN_EXPIRED_TIME',data.tokenExpiredTime)
-        setTokenExpriredTime(data.tokenExpiredTime)
-        // console.log("user 类型 "+ (typeof data.user) )
-        debugger
-        //设置name和头像
-        commit('SET_NAME', data.user.username)
-        commit('SET_AVATAR', data.user.photoUrl)
-        let userId = data.user.id
-        setUserId(data.user.id)
-        setUsername(data.user.username)
-        resolve()
+        if(response.data.code == 200){
+          const { data } = response.data
+          debugger
+          commit('SET_TOKEN', data.token)
+          setToken(data.token)
+          commit('SET_TOKEN_EXPIRED_TIME',data.tokenExpiredTime)
+          setTokenExpriredTime(data.tokenExpiredTime)
+          //设置name和头像
+          commit('SET_NAME', data.user.username)
+          commit('SET_AVATAR', data.user.photoUrl)
+          let userId = data.user.id
+          setUserId(data.user.id)
+          setUsername(data.user.username)
+          Message({
+                    message: '登录成功!',
+                    type: 'success'
+                  });
+          resolve()
+        }else{
+          Message({
+                    message: response.data.msg,
+                    type: 'error'
+                  });
+          reject(error)
+        }
       }).catch(error => {
+        console.log("登录失败 "+error)
         reject(error)
       })
     })

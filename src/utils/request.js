@@ -108,7 +108,7 @@ service.interceptors.response.use(
   },
   error => {
     console.log('err' + error) // for debug
-   //  debugger
+     debugger
    //  //刷新token的第2种方法: 后端返回401,表示在过期后允许的时间内,刷新token
    //  if (error.response) {
    //    if (error.response.status === 401) {
@@ -135,13 +135,12 @@ service.interceptors.response.use(
    //    }
    // }
 
-   //拒绝请求
-    // Message({
-    //   message: error.message,
-    //   type: 'error',
-    //   duration: 5 * 1000
-    // })
-    // return Promise.reject(error)
+  //   Message({
+  //     message: error.message,
+  //     type: 'error',
+  //     duration: 5 * 1000
+  //   })
+     // return Promise.reject(error)
   }
 )
 
