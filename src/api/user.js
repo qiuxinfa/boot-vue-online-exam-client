@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function login(data) {
   return request({
-    url: '/user/login',
+    url: '/auth/login',
     method: 'post',
     data
   })
@@ -67,7 +67,7 @@ export function logout() {
 
 export function refreshToken(token) {
   return request({
-    url: '/user/refreshToken',
+    url: '/auth/refreshToken',
     method: 'get',
     params: { token }
   })
