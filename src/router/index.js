@@ -45,196 +45,101 @@ export const constantRoutes = [
     hidden: true
   },
 
-  {
-    path: '/exam',
-    component: Layout,
-    redirect: '/exam/list',
-    name: 'exam',
-    meta: { title: 'Exam', icon: 'dashboard' },
-    children: [{
-      path: 'list',
-      name: 'examList',
-      component: () => import('@/views/exam/examList'),
-      meta: { title: 'ExamList', icon: 'dashboard' }
-    },
-    {path: 'detail',
-      name: 'examDetail',
-      hidden: true,
-      component: () => import('@/views/exam/examDetail'),
-      meta: { title: 'ExamDetail', icon: 'dashboard' }
-    },
-    {path: 'answer',
-      name: 'answer',
-      hidden: true,
-      component: () => import('@/views/exam/viewAnswer'),
-      meta: { title: 'ExamAnswer', icon: 'dashboard' }
-    },
-    {path: 'record/list',
-      name: 'recordList',
-      component: () => import('@/views/exam/examRecord'),
-      meta: { title: 'ExamRecord', icon: 'dashboard' }
-    },
-    {path: 'record/viewAnswer',
-      name: 'viewAnswer',
-      hidden: true,
-      component: () => import('@/views/exam/viewAnswer'),
-      meta: { title: 'viewAnswer', icon: 'dashboard' }
-    }
-    ]
-  },
-
-  {
-    path: '/question',
-    component: Layout,
-    redirect: '/question/list',
-    children: [{
-      path: 'list',
-      name: 'questionManager',
-      component: () => import('@/views/exam/questionManager'),
-      meta: { title: 'questionManager', icon: 'dashboard' }
-    }]
-  },
-  {
-    path: '/paper',
-    component: Layout,
-    redirect: '/paper/list',
-    children: [{
-      path: 'list',
-      name: 'paperManager',
-      component: () => import('@/views/exam/paperManager'),
-      meta: { title: 'paperManager', icon: 'dashboard' }
-    }]
-  },
-  {
-    path: '/user',
-    component: Layout,
-    redirect: '/user/list',
-    children: [{
-      path: 'list',
-      name: 'UserList',
-      component: () => import('@/views/user/userList'),
-      meta: { title: 'UserList', icon: 'dashboard' }
-    }]
-  },
-
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
-    }]
-  },
-
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
-    children: [
-      {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
-  },
-
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  },
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'menu2' }
-      }
-    ]
-  },
-
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://github.com/qiuxinfa/boot-vue-online-exam-sever',
-        meta: { title: 'External Link', icon: 'link' }
-      }
-    ]
-  },
-
+ {
+   path: '/',
+   component: Layout,
+   redirect: '/dashboard',
+   children: [{
+     path: 'dashboard',
+     name: 'Dashboard',
+     component: () => import('@/views/dashboard/index'),
+     meta: { title: 'Dashboard', icon: 'dashboard' }
+   }]
+ },
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  // { path: '*', redirect: '/404', hidden: true }
+]
+
+export const asyncRoutes = [
+ {
+   path: '/exam',
+   component: Layout,
+   redirect: '/exam/list',
+   name: 'exam',
+   meta: { authStr: '/exam', title: 'Exam', icon: 'dashboard' },
+   children: [{
+     path: 'list',
+     name: 'examList',
+     component: () => import('@/views/exam/examList'),
+     meta: { authStr: '/exam/list',  title: 'ExamList', icon: 'dashboard' }
+   },
+   {path: 'detail',
+     name: 'examDetail',
+     hidden: true,
+     component: () => import('@/views/exam/examDetail'),
+     meta: {authStr: '/exam/detail',  title: 'ExamDetail', icon: 'dashboard' }
+   },
+   {path: 'answer',
+     name: 'answer',
+     hidden: true,
+     component: () => import('@/views/exam/viewAnswer'),
+     meta: {authStr: '/exam/answer', title: 'ExamAnswer', icon: 'dashboard' }
+   },
+   {path: 'record/list',
+     name: 'recordList',
+     component: () => import('@/views/exam/examRecord'),
+     meta: {authStr: '/examRecord/list', title: 'ExamRecord', icon: 'dashboard' }
+   },
+   {path: 'record/viewAnswer',
+     name: 'viewAnswer',
+     hidden: true,
+     component: () => import('@/views/exam/viewAnswer'),
+     meta: {authStr: '/examRecord/view', title: 'viewAnswer', icon: 'dashboard' }
+   }]
+ },
+
+ {
+   path: '/question',
+   component: Layout,
+   redirect: '/question/list',
+   name: 'question',
+   meta: { authStr: '/question', title: 'Question', icon: 'dashboard' },
+   children: [{
+     path: 'list',
+     name: 'questionManager',
+     component: () => import('@/views/exam/questionManager'),
+     meta: {authStr: '/question/list', title: 'questionManager', icon: 'dashboard' }
+   }]
+ },
+
+ {
+   path: '/paper',
+   component: Layout,
+   redirect: '/paper/list',
+   name: 'paper',
+   meta: { authStr: '/paper', title: 'Paper', icon: 'dashboard' },
+   children: [{
+     path: 'list',
+     name: 'paperManager',
+     component: () => import('@/views/exam/paperManager'),
+     meta: {authStr: '/paper/list', title: 'paperManager', icon: 'dashboard' }
+   }]
+ },
+
+ {
+   path: '/user',
+   component: Layout,
+   redirect: '/user/list',
+   name: 'user',
+   meta: { authStr: '/user', title: 'User', icon: 'dashboard' },
+   children: [{
+     path: 'list',
+     name: 'UserList',
+     component: () => import('@/views/user/userList'),
+     meta: {authStr: '/user/list', title: 'UserList', icon: 'dashboard' }
+   }]
+ }
+
 ]
 
 const createRouter = () => new Router({

@@ -186,17 +186,6 @@ export default {
     }
   },
   data() {
-    // 检测两次密码是否一致
-    // var validatePass2 = (rule, value, callback) => {
-    //   if (value === '') {
-    //     callback(new Error('请再次输入密码'))
-    //   } else if (value !== this.ruleForm.password) {
-    //     callback(new Error('两次输入密码不一致!'))
-    //   } else {
-    //     callback();
-    //   }
-    // }
-
     return {
      fileList: [],
      url: '',
@@ -235,14 +224,6 @@ export default {
           { required: true, message: '请输入邮箱地址' },
           { type: 'email', message: '请输入正确的邮箱地址' }
         ],
-        // password: [
-        //   { required: true, message: '请输入密码', trigger: 'blur' },
-        //   {validator: 'regexp', pattern: /^[a-zA-Z]\w{5,17}$/, message: '密码格式不正确', trigger: 'change,blur'}
-        // ],
-        // pass2: [
-        //   { required: true, message: '请再次输入密码', trigger: 'blur' },
-        //   { validator: validatePass2, trigger: 'blur' }
-        // ],
         roleName: [
           { required: true, message: '请选择用户角色', trigger: 'change' }
         ]
@@ -295,16 +276,6 @@ export default {
      // this.imageUrl = URL.createObjectURL(file.raw);
     },
     beforeAvatarUpload(file) {
-      const isJPG = file.type === 'image/jpeg';
-      const isLt2M = file.size / 1024 / 1024 < 2;
-
-      if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!');
-      }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!');
-      }
-     // return isJPG && isLt2M;
      let formData = new FormData();
      formData.append("multipartFiles", file);
      upload(formData).then(response => {

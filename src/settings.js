@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'Vue Admin Template',
+  title: 'boot-vue-online-exam',
 
   /**
    * @type {boolean} true | false

@@ -8,6 +8,21 @@ export function login(data) {
   })
 }
 
+export function logout() {
+  return request({
+    url: '/auth/logout',
+    method: 'post'
+  })
+}
+
+export function getMenu(id) {
+  return request({
+    url: '/auth/menu',
+    method: 'get',
+    params: {userId:id}
+  })
+}
+
 export function getInfo(token) {
   return request({
     url: '/user/info',
@@ -53,15 +68,6 @@ export function upload(data) {
     url: '/user/upload',
     method: 'post',
     data
-  })
-}
-
-
-
-export function logout() {
-  return request({
-    url: '/user/logout',
-    method: 'post'
   })
 }
 

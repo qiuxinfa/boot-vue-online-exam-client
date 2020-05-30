@@ -1,36 +1,52 @@
 import request from '@/utils/request'
 
-export function getFillList(data) {
+export function getQuestionList(data) {
   return request({
-    url: '/fill/list',
+    url: '/question/list',
     method: 'get',
     params: data
   })
 }
 
-export function getJudgeList(data) {
-  return request({
-    url: '/judge/list',
-    method: 'get',
-    params: data
-  })
-}
+// export function addQuestion(data) {
+//   return request({
+//     url: '/question/add',
+//     method: 'post',
+//     data
+//   })
+// }
 
-export function getSingleList(data) {
-  return request({
-    url: '/single/list',
-    method: 'get',
-    params: data
-  })
-}
+// export function getFillList(data) {
+//   return request({
+//     url: '/fill/list',
+//     method: 'get',
+//     params: data
+//   })
+// }
 
-export function getMultiList(data) {
-  return request({
-    url: '/multi/list',
-    method: 'get',
-    params: data
-  })
-}
+// export function getJudgeList(data) {
+//   return request({
+//     url: '/judge/list',
+//     method: 'get',
+//     params: data
+//   })
+// }
+
+// export function getSingleList(data) {
+//   return request({
+//     url: '/single/list',
+//     method: 'get',
+//     params: data
+//   })
+// }
+
+// export function getMultiList(data) {
+//   return request({
+//     url: '/multi/list',
+//     method: 'get',
+//     params: data
+//   })
+// }
 
 export function addFill(data) {
   return request({

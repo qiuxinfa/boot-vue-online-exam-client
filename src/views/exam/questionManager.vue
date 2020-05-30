@@ -195,7 +195,7 @@
 </template>
 
 <script>
-import { getFillList,getJudgeList,getSingleList,getMultiList,addFill,addJudge,addSingle,addMulti } from '@/api/question'
+import { getQuestionList,addFill,addJudge,addSingle,addMulti } from '@/api/question'
 import { getUserId } from '@/utils/auth'
 
 export default {
@@ -275,17 +275,10 @@ export default {
       let params = {
         startPage: this.startPage,
         pageSize: this.pageSize,
-        content: this.filters.keyword
+        content: this.filters.keyword,
+        questionType: this.activeName
       }
-      let doQuery = getFillList
-      if(this.activeName == 'second'){
-        doQuery = getJudgeList
-      }else if(this.activeName == 'third'){
-        doQuery = getSingleList
-      }else if(this.activeName == 'fourth'){
-        doQuery = getMultiList
-      }
-      doQuery(params).then(response => {
+      getQuestionList(params).then(response => {
         this.list = response.data.data
         this.total = response.data.total
         this.listLoading = false
