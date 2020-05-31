@@ -6,6 +6,11 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  created() {
+    console.log("实例化Vue")
+		this.$store.commit('user/initUser')
+    this.$store.commit('user/SET_MENU','')
+  }
 }
 </script>

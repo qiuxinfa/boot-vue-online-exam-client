@@ -1,5 +1,5 @@
 import { getMenu, login, logout, getInfo,refreshToken} from '@/api/user'
-import { getUserId,setUserId,setUsername, setToken, removeToken, setTokenExpriredTime,getTokenExpriredTime } from '@/utils/auth'
+import { setUser,getUser,setUserId,getUserId,setUsername, getUsername,setToken, getToken, setTokenExpriredTime,getTokenExpriredTime } from '@/utils/auth'
 import { resetRouter } from '@/router'
 import {  Message } from 'element-ui'
 
@@ -34,7 +34,24 @@ const mutations = {
   },
   SET_MENU: (state, menu) => {
     state.menuList = menu
-  }
+  },
+  // 页面刷新时防止信息丢失可以掉用本地存储获取用户信息
+  initUser: (state) => {
+    debugger
+    let user = getUser()
+   // console.log("initUser当前用户str；"+user)
+    if(user){
+      // state.menuList = ''
+      // resetRouter()
+      state.curUser = JSON.parse(user)
+      //console.log("initUser当前用户；"+(state.curUser))
+      state.id = state.curUser.id
+      state.name = state.curUser.username
+      state.avatar = state.curUser.photoUrl
+      state.token = getToken()
+    }
+  },
+
 }
 
 const actions = {
@@ -56,6 +73,7 @@ const actions = {
           commit('SET_AVATAR', data.user.photoUrl)
           let userId = data.user.id
           setUserId(data.user.id)
+          setUser(data.user)
           setUsername(data.user.username)
           console.log("登录成功")
           Message({
@@ -79,9 +97,9 @@ const actions = {
   // get menu list
   getMenuList({ commit, state }) {
    // debugger
-    console.log("user menu "+state.id)
+    console.log("user menu userId "+getUserId())
     return new Promise((resolve, reject) => {
-      getMenu(state.id).then(response => {
+      getMenu(getUserId()).then(response => {
         debugger
        // console.log("请求menu结束.."+response.data.data[0].url)
         // 设置菜单权限
@@ -142,7 +160,9 @@ const actions = {
         // 清空权限菜单
         commit('SET_MENU', '')
         commit('SET_TOKEN', '')
-        removeToken()
+        setUserId('')
+        setUser('')
+        setToken('')
         resetRouter()
         Message({
                   message: '已退出登录!',
@@ -159,7 +179,7 @@ const actions = {
   resetToken({ commit }) {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')
-      removeToken()
+      setToken('')
       resolve()
     })
   }
