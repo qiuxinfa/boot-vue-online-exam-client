@@ -63,7 +63,7 @@ router.beforeEach(async(to, from, next) => {
       //如果已经获取菜单了
       //debugger
       if (hasGetMenuList) {
-        console.log("进入下一个  ")
+        //console.log("进入下一个  ")
         next()
       } else {
         try {

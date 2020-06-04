@@ -54,6 +54,7 @@
 
 <script>
 // import { validUsername } from '@/utils/validate'
+import { openSocket} from '@/api/mysocket'
 
 export default {
   name: 'Login',
@@ -112,8 +113,8 @@ export default {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm).then(() => {
             // debugger
-            // this.$router.push({ path: this.redirect || '/' })
-             this.$router.push({ path: '/' })
+            openSocket()  //开启websocket
+            this.$router.push({ path: '/' })
             this.loading = false
           }).catch((err) => {
             this.loading = false

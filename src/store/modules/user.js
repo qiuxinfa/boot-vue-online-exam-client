@@ -15,6 +15,7 @@ const state = {
 
 const mutations = {
   SET_TOKEN: (state, token) => {
+    console.log("vuex set token "+token)
     state.token = token
   },
   SET_TOKEN_EXPIRED_TIME: (state, tokenExpiredTime) => {
@@ -37,7 +38,7 @@ const mutations = {
   },
   // 页面刷新时防止信息丢失可以掉用本地存储获取用户信息
   initUser: (state) => {
-    debugger
+    // debugger
     let user = getUser()
    // console.log("initUser当前用户str；"+user)
     if(user){

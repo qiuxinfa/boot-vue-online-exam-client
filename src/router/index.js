@@ -66,7 +66,7 @@ export const asyncRoutes = [
    component: Layout,
    redirect: '/exam/list',
    name: 'exam',
-   meta: { authStr: '/exam', title: 'Exam', icon: 'dashboard' },
+   meta: { authStr: '/exam', title: 'Exam', icon: 'example' },
    children: [{
      path: 'list',
      name: 'examList',
@@ -88,13 +88,13 @@ export const asyncRoutes = [
    {path: 'record/list',
      name: 'recordList',
      component: () => import('@/views/exam/examRecord'),
-     meta: {authStr: '/examRecord/list', title: 'ExamRecord', icon: 'dashboard' }
+     meta: {authStr: '/examRecord/list', title: 'ExamRecord', icon: 'eye-open' }
    },
    {path: 'record/viewAnswer',
      name: 'viewAnswer',
      hidden: true,
      component: () => import('@/views/exam/viewAnswer'),
-     meta: {authStr: '/examRecord/view', title: 'viewAnswer', icon: 'dashboard' }
+     meta: {authStr: '/examRecord/view', title: 'viewAnswer', icon: 'eye-open' }
    }]
  },
 
@@ -103,12 +103,12 @@ export const asyncRoutes = [
    component: Layout,
    redirect: '/question/list',
    name: 'question',
-   meta: { authStr: '/question', title: 'Question', icon: 'dashboard' },
+   meta: { authStr: '/question', title: 'Question', icon: 'form' },
    children: [{
      path: 'list',
      name: 'questionManager',
      component: () => import('@/views/exam/questionManager'),
-     meta: {authStr: '/question/list', title: 'questionManager', icon: 'dashboard' }
+     meta: {authStr: '/question/list', title: 'questionManager', icon: 'form' }
    }]
  },
 
@@ -117,12 +117,12 @@ export const asyncRoutes = [
    component: Layout,
    redirect: '/paper/list',
    name: 'paper',
-   meta: { authStr: '/paper', title: 'Paper', icon: 'dashboard' },
+   meta: { authStr: '/paper', title: 'Paper', icon: 'table' },
    children: [{
      path: 'list',
      name: 'paperManager',
      component: () => import('@/views/exam/paperManager'),
-     meta: {authStr: '/paper/list', title: 'paperManager', icon: 'dashboard' }
+     meta: {authStr: '/paper/list', title: 'paperManager', icon: 'table' }
    }]
  },
 
@@ -131,12 +131,12 @@ export const asyncRoutes = [
    component: Layout,
    redirect: '/user/list',
    name: 'user',
-   meta: { authStr: '/user', title: 'User', icon: 'dashboard' },
+   meta: { authStr: '/user', title: 'User', icon: 'user' },
    children: [{
      path: 'list',
      name: 'UserList',
      component: () => import('@/views/user/userList'),
-     meta: {authStr: '/user/list', title: 'UserList', icon: 'dashboard' }
+     meta: {authStr: '/user/list', title: 'UserList', icon: 'user' }
    }]
  }
 

@@ -12,7 +12,7 @@ export function getToken() {
 }
 
 export function setToken(token) {
-  console.log("设置新的token: "+token)
+  console.log("js-cookie 设置新的token: "+token)
   return Cookies.set(TokenKey, token)
 }
 
