@@ -24,6 +24,14 @@ export function addPaper(data) {
   })
 }
 
+export function updatePaper(data) {
+  return request({
+    url: '/paper/update',
+    method: 'post',
+    data
+  })
+}
+
 //获取各种题型数量
 export function getCount() {
   return request({

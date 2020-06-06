@@ -60,6 +60,10 @@
                 size="mini"
                 type="primary" icon="el-icon-view"
                 @click="handleView(scope.row.id)">查看试卷详情</el-button>
+                <el-button v-if="scope.row.isPublish != 1"
+                  size="mini"
+                  type="danger" icon="el-icon-edit"
+                  @click="publishExam(scope.row.id)">发布考试</el-button>
             </template>
       </el-table-column>
     </el-table>
@@ -160,7 +164,7 @@
 </template>
 
 <script>
-import { getPaperList,addPaper,getCount } from '@/api/paper'
+import { getPaperList,addPaper,updatePaper,getCount } from '@/api/paper'
 import { getUserId } from '@/utils/auth'
 
 export default {
@@ -208,7 +212,7 @@ export default {
             callback()
           }
         }
-    }; 
+    };
     //校验单选题数量
     let validSingle=(rule,value,callback)=>{
         let reg=/^(0|[1-9][0-9]*)$/
@@ -234,7 +238,7 @@ export default {
             callback()
           }
         }
-    };           
+    };
     //校验分数
     let validcodeScore=(rule,value,callback)=>{
         let reg=/^(0|[1-9][0-9]*)+(.[0-9]{1,2})?$/
@@ -383,7 +387,7 @@ export default {
         this.fillCount = response.data.data.fillCount
         this.judgeCount = response.data.data.judgeCount
         this.singleCount = response.data.data.singleCount
-        this.multiCount = response.data.data.multiCount        
+        this.multiCount = response.data.data.multiCount
       }).catch(err =>{
         this.listLoading = false
       })
@@ -425,9 +429,31 @@ export default {
        })
      },
     //查看试卷详情
-    handleView(recordId){
-    //   this.$router.push({path: '/exam/record/viewAnswer', query: {recordId: recordId,isPractice: true}})
+    handleView(id){
+      alert("该功能尚未开发")
      },
+
+   // 发布考试
+   publishExam(id){
+     let param = {
+       id: id,
+       isPublish: 1
+     }
+     updatePaper(param).then(response => {
+       if(response.data.code == 200){
+       this.$message({
+                 message: response.data.msg
+               });
+       }
+       //刷新列表
+       this.fetchData()
+     }).catch(err =>{
+       this.$message({
+                 message: '发布考试失败',
+                 type: 'error'
+               });
+     })
+   },
 
     // 每页大小改变时触发
     handleSizeChange (val) {
