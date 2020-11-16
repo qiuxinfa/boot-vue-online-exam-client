@@ -5,12 +5,6 @@
       <el-form-item label="用户名">
         <el-input v-model="filters.keyword" placeholder="输入用户名查询"></el-input>
       </el-form-item>
-<!--      <el-form-item label="活动区域">
-        <el-select v-model="formInline.region" placeholder="活动区域">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
-        </el-select>
-      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" @click="queryData">查询</el-button>
       </el-form-item>
@@ -218,11 +212,11 @@ export default {
       rules: {
         username: [
           { required: true, message: '请输入用户名'},
-          { min: 2, max: 10, message: '长度在 5 到 12 个字符'}
+          { min: 2, max: 10, message: '长度在 5 到 12 个字符',trigger: 'blur'}
         ],
         email: [
           { required: true, message: '请输入邮箱地址' },
-          { type: 'email', message: '请输入正确的邮箱地址' }
+          { type: 'email', message: '请输入正确的邮箱地址',trigger: 'blur' }
         ],
         roleName: [
           { required: true, message: '请选择用户角色', trigger: 'change' }
@@ -310,6 +304,8 @@ export default {
      //新增
     handelAdd() {
       this.currentType = 'add'
+      // 清空表单对象
+      this.ruleForm = {}
       //显示弹框
       this.dialogFormVisible = true;
      },
