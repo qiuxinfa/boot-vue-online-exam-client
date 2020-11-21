@@ -8,46 +8,6 @@ export function getQuestionList(data) {
   })
 }
 
-// export function addQuestion(data) {
-//   return request({
-//     url: '/question/add',
-//     method: 'post',
-//     data
-//   })
-// }
-
-// export function getFillList(data) {
-//   return request({
-//     url: '/fill/list',
-//     method: 'get',
-//     params: data
-//   })
-// }
-
-// export function getJudgeList(data) {
-//   return request({
-//     url: '/judge/list',
-//     method: 'get',
-//     params: data
-//   })
-// }
-
-// export function getSingleList(data) {
-//   return request({
-//     url: '/single/list',
-//     method: 'get',
-//     params: data
-//   })
-// }
-
-// export function getMultiList(data) {
-//   return request({
-//     url: '/multi/list',
-//     method: 'get',
-//     params: data
-//   })
-// }
-
 export function addFill(data) {
   return request({
     url: '/fill/add',
@@ -77,5 +37,21 @@ export function addMulti(data) {
     url: '/multi/add',
     method: 'post',
     data
+  })
+}
+
+export function exportQuestionList() {
+  return request({
+    url: '/question/exportExcel',
+    method: 'post',
+    responseType: 'blob'
+  })
+}
+
+export function exportTemplate() {
+  return request({
+    url: '/question/template/download',
+    method: 'post',
+    responseType: 'blob'
   })
 }

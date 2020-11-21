@@ -18,6 +18,12 @@
           <el-form-item>
             <el-button type="primary" icon="el-icon-plus" @click="handelAdd">新增题目</el-button>
           </el-form-item>
+          <el-form-item>
+          	<el-button type="primary" round @click="exportQuestionTemplate">下载导入模板</el-button>
+          </el-form-item>
+          <el-form-item>
+          	<el-button type="infor" round @click="exportQuestions">导出题库</el-button>
+          </el-form-item>
     </el-form>
 
     <el-table
@@ -195,7 +201,7 @@
 </template>
 
 <script>
-import { getQuestionList,addFill,addJudge,addSingle,addMulti } from '@/api/question'
+import { getQuestionList,addFill,addJudge,addSingle,addMulti,exportQuestionList,exportTemplate } from '@/api/question'
 import { getUserId } from '@/utils/auth'
 
 export default {
@@ -324,6 +330,38 @@ export default {
       //显示弹框
       this.dialogFormVisible = true;
      },
+     // 导出题库
+    exportQuestions(){
+        exportQuestionList().then(res => {
+          const link = document.createElement('a')
+          let blob = new Blob([res.data],{type: 'application/vnd.ms-excel'});
+          link.style.display = 'none'
+          link.href = URL.createObjectURL(blob);
+          link.setAttribute('download','题库.xlsx')
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+        }).catch(e => {
+          console.log("导出题库失败")
+        })
+    },
+    
+    // 题库导入模板
+    exportQuestionTemplate(){
+        exportTemplate().then(res => {
+          const link = document.createElement('a')
+          let blob = new Blob([res.data],{type: 'application/vnd.ms-excel'});
+          link.style.display = 'none'
+          link.href = URL.createObjectURL(blob);
+          link.setAttribute('download','题库导入模板.xlsx')
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+        }).catch(e => {
+          console.log("导出题库失败")
+        })
+    },
+    
     changeType(val){
       // let t = this.activeName
       debugger
