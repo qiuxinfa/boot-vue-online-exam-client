@@ -55,3 +55,12 @@ export function exportTemplate() {
     responseType: 'blob'
   })
 }
+
+export function importQuestions(data) {
+  return request({
+    url: '/question/import',
+    method: 'post',
+    data: data,
+    headers: {'Content-Type': 'multipart/form-data' }
+  })
+}

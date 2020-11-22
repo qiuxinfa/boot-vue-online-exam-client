@@ -22,6 +22,18 @@
           	<el-button type="primary" round @click="exportQuestionTemplate">下载导入模板</el-button>
           </el-form-item>
           <el-form-item>
+				   <el-upload class="upload-demo"
+                 :action="uploadUrl"
+								 :before-upload="handleBeforeUpload"
+								 :on-error="handleUploadError"
+                 :show-file-list="showFile"
+								 accept=".xls,.xlsx"
+                 :http-request="uploadFile"
+								 :file-list="fileList">
+				      <el-button type="infor" round>导入题库</el-button>
+				   </el-upload>
+          </el-form-item>
+          <el-form-item>
           	<el-button type="infor" round @click="exportQuestions">导出题库</el-button>
           </el-form-item>
     </el-form>
@@ -201,7 +213,7 @@
 </template>
 
 <script>
-import { getQuestionList,addFill,addJudge,addSingle,addMulti,exportQuestionList,exportTemplate } from '@/api/question'
+import { getQuestionList,addFill,addJudge,addSingle,addMulti,exportQuestionList,exportTemplate,importQuestions } from '@/api/question'
 import { getUserId } from '@/utils/auth'
 
 export default {
@@ -270,6 +282,10 @@ export default {
           view: "查看",
           edit: "修改"
       },
+      // Excel导入相关属性
+      uploadUrl: '/question/import',  // 随便写一个
+      fileList: [],
+      showFile: false,
     }
   },
   created() {
@@ -345,7 +361,7 @@ export default {
           console.log("导出题库失败")
         })
     },
-    
+
     // 题库导入模板
     exportQuestionTemplate(){
         exportTemplate().then(res => {
@@ -361,7 +377,39 @@ export default {
           console.log("导出题库失败")
         })
     },
-    
+
+    // 文件上传之前
+    handleBeforeUpload(file){
+      if(this.fileList.length > 1){
+        this.$message.warning("只能上传一个文件");
+        return false;
+      }
+      let fileType = file.name.substring(file.name.lastIndexOf('.') + 1);
+      if(fileType == 'xls' || fileType == 'xlsx'){
+        this.fileList.push(file);
+      }else{
+        this.$message.warning("只能上传.xls和.xlsx格式的文件");
+        return false;
+      }
+    },
+    // 执行文件上传
+    uploadFile(){
+      let formData = new FormData();
+      formData.append("file", this.fileList[0]);
+      const that = this;
+      importQuestions(formData).then(res => {
+        this.$message.success('文件上传成功');
+        // 刷新列表
+        that.fetchData();
+      }).catch(e => {
+        this.$message.error('文件上传失败');
+      });
+    },
+    // 文件上传出错
+    handleUploadError(){
+       this.$message.error('文件上传失败');
+    },
+
     changeType(val){
       // let t = this.activeName
       debugger
