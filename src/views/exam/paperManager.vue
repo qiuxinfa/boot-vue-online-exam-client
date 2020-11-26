@@ -11,6 +11,9 @@
           <el-form-item>
             <el-button type="primary" icon="el-icon-plus" @click="handelAdd">随机组卷</el-button>
           </el-form-item>
+          <el-form-item>
+            <el-button type="primary" icon="el-icon-plus" @click="handelSelect">自由选题</el-button>
+          </el-form-item>
     </el-form>
 
     <el-table
@@ -89,60 +92,60 @@
           <div style="width:80%;margin: 0 auto">
             <el-form :model="ruleForm" status-icon :rules="rules"  ref="ruleForm" :inline="false" label-width="100px" class="demo-ruleForm">
               <el-row>
-                <el-col span="12">
+                <el-col :span="12">
                   <el-form-item label="试卷名称" prop="name">
                     <el-input type="text" placeholder="试卷名称" auto-complete="off" v-model="ruleForm.name"></el-input>
                   </el-form-item>
                 </el-col>
-                <el-col span="12">
+                <el-col :span="12">
                   <el-form-item label="考试总时间" prop="totalTime">
                     <el-input type="number" placeholder="单位为分钟" auto-complete="off" v-model="ruleForm.totalTime"></el-input>
                   </el-form-item>
                 </el-col>
               </el-row>
               <el-row>
-                <el-col span="12">
+                <el-col :span="12">
                   <el-form-item label="填空题数量" prop="fillNumber">
                     <el-input type="number" placeholder="填空题数量" auto-complete="off" v-model="ruleForm.fillNumber"></el-input>
                   </el-form-item>
                 </el-col>
-                <el-col span="12">
+                <el-col :span="12">
                   <el-form-item label="填空题分数" prop="fillScore">
                     <el-input type="number" @blur="fillScoreChange" placeholder="单题的分数" auto-complete="off" v-model="ruleForm.fillScore"></el-input>
                   </el-form-item>
                 </el-col>
               </el-row>
               <el-row>
-                <el-col span="12">
+                <el-col :span="12">
                   <el-form-item label="判断题数量" prop="judgeNumber">
                     <el-input type="number" placeholder="判断题数量" auto-complete="off" v-model="ruleForm.judgeNumber"></el-input>
                   </el-form-item>
                 </el-col>
-                <el-col span="12">
+                <el-col :span="12">
                   <el-form-item label="判断题分数" prop="judgeScore">
                     <el-input type="number" placeholder="单题的分数" auto-complete="off" v-model="ruleForm.judgeScore"></el-input>
                   </el-form-item>
                 </el-col>
               </el-row>
               <el-row>
-                <el-col span="12">
+                <el-col :span="12">
                   <el-form-item label="单选题数量"   prop="singleNumber">
                     <el-input type="number" placeholder="单选题数量" auto-complete="off" v-model="ruleForm.singleNumber"></el-input>
                   </el-form-item>
                 </el-col>
-                <el-col span="12">
+                <el-col :span="12">
                   <el-form-item label="单选题分数" prop="singleScore" >
                     <el-input type="number" placeholder="单题的分数" auto-complete="off" v-model="ruleForm.singleScore"></el-input>
                   </el-form-item>
                 </el-col>
               </el-row>
               <el-row>
-                <el-col span="12">
+                <el-col :span="12">
                   <el-form-item label="多选题数量" prop="multiNumber" >
                     <el-input type="number" placeholder="多选题数量" auto-complete="off" v-model="ruleForm.multiNumber"></el-input>
                   </el-form-item>
                 </el-col>
-                <el-col span="12">
+                <el-col :span="12">
                   <el-form-item label="多选题分数" prop="multiScore" >
                     <el-input type="number" placeholder="单题的分数" auto-complete="off" v-model="ruleForm.multiScore"></el-input>
                   </el-form-item>
@@ -153,18 +156,101 @@
               </el-form-item>
             </el-form>
            </div>
+
            <div slot="footer" class="dialog-footer">
              <el-button @click="dialogFormVisible = false">取 消</el-button>
              <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
            </div>
    </el-dialog>
 
+   <!-- 自由选题弹窗 -->
+   <el-dialog title="自由组卷" :visible.sync="selectQuestionDialog">
+     <el-steps :active="activeIndex" finish-status="success">
+       <el-step title="选择题目"></el-step>
+       <el-step title="填写试卷信息"></el-step>
+     </el-steps>
+     <el-button v-if="activeIndex == 0" type="primary" style="margin-left: 500px;" @click="nextStep">下一步</el-button>
+     <el-button v-if="activeIndex == 1" type="primary" style="margin-bottom: 5px;margin-left: 50px;" @click="preStep">上一步</el-button>
+
+      <!-- 选择题目 -->
+     <template v-if="activeIndex == 0">
+       <el-tabs v-model="activeName" @tab-click="handleClick">
+         <el-tab-pane v-for="(v,k) in questionConfig" :key="k" :label="v.label" :name="k">
+           <el-table
+               ref="multipleTable"
+               :data="v.tabData"
+               tooltip-effect="dark"
+               style="width: 100%"
+               @selection-change="handleSelectionChange">
+               <el-table-column
+                 type="selection"
+                 width="55">
+               </el-table-column>
+               <el-table-column
+                 prop="questionContent"
+                 label="题目描述"
+                 >
+               </el-table-column>
+             </el-table>
+         </el-tab-pane>
+       </el-tabs>
+     </template>
+     <!-- 试卷信息 -->
+     <template v-else>
+       <el-form :model="ruleForm" status-icon :rules="rules"  ref="ruleForm" :inline="false" label-width="100px" class="demo-ruleForm">
+         <el-row>
+           <el-col :span="12">
+             <el-form-item label="试卷名称" prop="name">
+               <el-input type="text" placeholder="试卷名称" auto-complete="off" v-model="ruleForm.name"></el-input>
+             </el-form-item>
+           </el-col>
+           <el-col :span="12">
+             <el-form-item label="考试总时间" prop="totalTime">
+               <el-input type="number" placeholder="单位为分钟" auto-complete="off" v-model="ruleForm.totalTime"></el-input>
+             </el-form-item>
+           </el-col>
+         </el-row>
+         <el-row>
+           <el-col :span="12">
+             <el-form-item label="填空题分数" prop="fillScore">
+               <el-input type="number" @blur="fillScoreChange" placeholder="单题的分数" auto-complete="off" v-model="ruleForm.fillScore"></el-input>
+             </el-form-item>
+           </el-col>
+           <el-col :span="12">
+             <el-form-item label="判断题分数" prop="judgeScore">
+               <el-input type="number" placeholder="单题的分数" auto-complete="off" v-model="ruleForm.judgeScore"></el-input>
+             </el-form-item>
+           </el-col>
+         </el-row>
+         <el-row>
+           <el-col :span="12">
+             <el-form-item label="单选题分数" prop="singleScore" >
+               <el-input type="number" placeholder="单题的分数" auto-complete="off" v-model="ruleForm.singleScore"></el-input>
+             </el-form-item>
+           </el-col>
+           <el-col :span="12">
+             <el-form-item label="多选题分数" prop="multiScore" >
+               <el-input type="number" placeholder="单题的分数" auto-complete="off" v-model="ruleForm.multiScore"></el-input>
+             </el-form-item>
+           </el-col>
+         </el-row>
+         <el-form-item label="试卷描述"   prop="examDesc">
+           <el-input type="textarea" placeholder="试卷描述" auto-complete="off" v-model="ruleForm.examDesc"></el-input>
+         </el-form-item>
+       </el-form>
+       <span slot="footer" class="dialog-footer">
+         <el-button @click="selectQuestionDialog = false">取 消</el-button>
+         <el-button type="primary" @click="toCreatePaper">确 定</el-button>
+       </span>
+     </template>
+   </el-dialog>
 
   </div>
 </template>
 
 <script>
-import { getPaperList,addPaper,updatePaper,getCount } from '@/api/paper'
+import { getPaperList,addPaper,updatePaper,getCount,createPaper } from '@/api/paper'
+import { getQuestionList } from '@/api/question'
 import { getUserId } from '@/utils/auth'
 
 export default {
@@ -325,7 +411,14 @@ export default {
       fillCount: null,  // 数据库中填空题的数量
       judgeCount: null,
       singleCount: null,
-      multiCount: null
+      multiCount: null,
+      activeName: 'first',
+      selectQuestionDialog: false,
+      questionConfig: {first: {label:'填空题',tabData:[],multipleSelection: []},
+                    second: {label:'判断题',tabData:[],multipleSelection: []},
+                    third: {label:'单选题',tabData:[],multipleSelection: []},
+                    fourth: {label:'多选题',tabData:[],multipleSelection: []}},
+      activeIndex: 0,   // 步骤条下标
     }
   },
   created() {
@@ -354,6 +447,7 @@ export default {
     },
     // 表单提交
     submitForm(formName) {
+      const that = this;
     	this.$refs[formName].validate((valid) => {
     		if (valid) {
     			if(this.currentType == 'add'){
@@ -362,7 +456,7 @@ export default {
             this.doUpdate()
           }
     		} else {
-    			console.log('error submit!!');
+          that.$message.error("表单填写不正确");
     			return false
     		}
     	})
@@ -393,6 +487,112 @@ export default {
       })
 
      },
+     nextStep(){
+       this.activeIndex = 1;
+     },
+     preStep(){
+       this.activeIndex = 0;
+     },
+     // 自由选题
+     handelSelect(){
+       if(this.questionConfig[this.activeName].tabData.length <= 0){
+         this.queryQuestionList();
+       }
+       this.selectQuestionDialog = true
+     },
+     // 切换题目类型tab
+    handleClick(tab, event) {
+     if(this.questionConfig[tab.name].tabData.length <= 0){
+       this.queryQuestionList();
+     }
+    },
+    handleSelectionChange(val) {
+      this.questionConfig[this.activeName].multipleSelection = val;
+    },
+    queryQuestionList() {
+      let params = {
+        notPage: 'true',
+        questionType: this.activeName
+      }
+      const that = this
+      getQuestionList(params).then(response => {
+        that.questionConfig[that.activeName].tabData = response.data.data
+      }).catch(err =>{
+
+      })
+    },
+    // 生成试卷
+    toCreatePaper(){
+      const that = this;
+      let isRight = true;
+      this.$refs['ruleForm'].validate((valid) => {
+        if(!valid){
+          isRight = false;
+          return;
+        }
+      });
+      if(!isRight){
+        that.$message.error("表单填写不正确");
+        return;
+      }
+      let fillIds = this.questionConfig.first.multipleSelection;
+      let judgeIds = this.questionConfig.second.multipleSelection;
+      let singleIds = this.questionConfig.third.multipleSelection;
+      let multiIds = this.questionConfig.fourth.multipleSelection;
+      let fillIdStr='';
+      let judgeIdStr = '';
+      let singleIdStr = '';
+      let multiIdStr = '';
+      debugger;
+      if(fillIds.length < 1 && judgeIds.length < 1 && singleIds.length < 1 && multiIds.length < 1){
+        this.$message({
+                  message: '请选题目',
+                  type: 'warning'
+                });
+        return;
+      }
+      if(fillIds.length > 0){
+        fillIds.map(item => {
+          fillIdStr+=item.id+",";
+        });
+        fillIdStr = fillIdStr.substr(0,fillIdStr.length-1)
+      }
+      if(judgeIds.length > 0){
+        judgeIds.map(item => {
+          judgeIdStr+=item.id+",";
+        });
+        judgeIdStr = judgeIdStr.substr(0,judgeIdStr.length-1)
+      }
+      if(singleIds.length > 0){
+        singleIds.map(item => {
+          singleIdStr+=item.id+",";
+        });
+        singleIdStr = singleIdStr.substr(0,singleIdStr.length-1)
+      }
+      if(multiIds.length > 0){
+        multiIds.map(item => {
+          multiIdStr+=item.id+",";
+        });
+        multiIdStr = multiIdStr.substr(0,multiIdStr.length-1)
+      }
+      // 生成试卷
+      let param = {
+        ...this.ruleForm,
+        fillIds: fillIdStr,
+        judgeIds: judgeIdStr,
+        singleIds: singleIdStr,
+        multiIds: multiIdStr
+      }
+      createPaper(param).then(res => {
+        that.$message.success("试卷已生成");
+        that.selectQuestionDialog = false;
+        that.fetchData();
+      }).catch(e => {
+        that.$message.error("试卷生成失败");
+      })
+      
+    },
+
      //编辑
     handleEdit(obj) {
       this.currentType = 'edit'

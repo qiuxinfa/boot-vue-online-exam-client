@@ -24,6 +24,14 @@ export function addPaper(data) {
   })
 }
 
+export function createPaper(data) {
+  return request({
+    url: '/paper/createPaper',
+    method: 'post',
+    data
+  })
+}
+
 export function updatePaper(data) {
   return request({
     url: '/paper/update',
