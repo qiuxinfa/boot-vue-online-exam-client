@@ -32,6 +32,15 @@ export function createPaper(data) {
   })
 }
 
+export function exportPaper(data) {
+  return request({
+    url: '/paper/exportPaper',
+    method: 'post',
+    responseType: 'blob',
+    data
+  })
+}
+
 export function updatePaper(data) {
   return request({
     url: '/paper/update',

@@ -62,7 +62,7 @@
               <el-button
                 size="mini"
                 type="primary" icon="el-icon-view"
-                @click="handleView(scope.row.id)">查看试卷详情</el-button>
+                @click="handleExport(scope.row)">导出试卷</el-button>
                 <el-button v-if="scope.row.isPublish != 1"
                   size="mini"
                   type="danger" icon="el-icon-edit"
@@ -249,7 +249,7 @@
 </template>
 
 <script>
-import { getPaperList,addPaper,updatePaper,getCount,createPaper } from '@/api/paper'
+import { getPaperList,addPaper,updatePaper,getCount,createPaper,exportPaper } from '@/api/paper'
 import { getQuestionList } from '@/api/question'
 import { getUserId } from '@/utils/auth'
 
@@ -590,7 +590,7 @@ export default {
       }).catch(e => {
         that.$message.error("试卷生成失败");
       })
-      
+
     },
 
      //编辑
@@ -628,10 +628,25 @@ export default {
                  });
        })
      },
-    //查看试卷详情
-    handleView(id){
-      alert("该功能尚未开发")
-     },
+    // 导出试卷
+    handleExport(item){
+      let param = {
+        id: item.id
+      };
+      exportPaper(param).then(res => {
+        debugger;
+        const link = document.createElement('a')
+        let blob = new Blob([res.data],{type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+        link.style.display = 'none'
+        link.href = URL.createObjectURL(blob);
+        link.setAttribute('download',item.name+'.docx')
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      }).catch(e => {
+        console.log("导出试卷失败");
+      })
+    },
 
    // 发布考试
    publishExam(id){
