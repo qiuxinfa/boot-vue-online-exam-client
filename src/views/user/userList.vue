@@ -11,6 +11,9 @@
       <el-form-item>
         <el-button type="primary" icon="el-icon-plus" @click="handelAdd">新增</el-button>
       </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="el-icon-plus" @click="handelTest">音频、视频播放测试</el-button>
+      </el-form-item>
     </el-form>
 
     <el-table
@@ -112,11 +115,6 @@
                 <el-form-item label="邮箱" prop="email">
                   <el-input type="text" placeholder="邮箱" auto-complete="off" v-model="ruleForm.email"></el-input>
                 </el-form-item>
-<!--                <el-form-item label="密码" prop="password">
-                  <el-input type="password" placeholder="密码以字母开头，长度在6~18之间，只能包含字符、数字和下划线" auto-complete="off" v-model="ruleForm.password"></el-input>
-                </el-form-item>
-                <el-form-item label="确认密码" prop="pass2">
-               <el-input type="password" placeholder="确认密码" auto-complete="off"  v-model="ruleForm.pass2"></el-input> -->
                <el-form-item label="头像"   prop="photoUrl">
                <el-upload
                    class="avatar-uploader"
@@ -156,6 +154,26 @@
            </div>
    </el-dialog>
 
+   <el-dialog :visible.sync="videoDialog">
+     <!-- 视频播放 -->
+     <videoTest></videoTest>
+     
+     <!-- 音频播放 -->
+
+     <aplayer autoplay :music="{
+       title: '夜空中最亮的星',
+       author: 'Hans Zimmer/Richard Harvey',
+       url: 'http://localhost:8888/api/file/G.E.M.邓紫棋-夜空中最亮的星.mp3',
+       pic: 'http://localhost:8888/api/file/3.jpg',
+       lrc: '[00:00.00]lrc here\n[00:01.00]aplayer',
+       showLrc: 'true'
+     }">
+     </aplayer>
+
+     <div slot="footer" class="dialog-footer">
+       <el-button @click="videoDialog = false">关闭</el-button>
+     </div>
+   </el-dialog>
 
   </div>
 </template>
@@ -164,6 +182,9 @@
 import { getUserList,addUser,updateUser,deleteUser,getRoleList,upload } from '@/api/user'
 import { getUserId } from '@/utils/auth'
 import { formatDate } from '@/utils/date'
+import videoTest from '../video/videoTest.vue'
+// 音频
+import Aplayer from 'vue-aplayer'
 
 export default {
   filters: {
@@ -178,6 +199,10 @@ export default {
     dateFormat(time){
       return formatDate(new Date(time),'yyyy-MM-dd hh:mm:ss')
     }
+  },
+  components:{
+    videoTest,
+    Aplayer,
   },
   data() {
     return {
@@ -229,8 +254,7 @@ export default {
          edit: "修改信息"
      },
      roles: [], //角色列表
-
-
+     videoDialog: false,
     }
   },
   created() {
@@ -301,6 +325,12 @@ export default {
     		}
     	})
     },
+
+    // 播放测试
+    handelTest(){
+      this.videoDialog = true;
+    },
+
      //新增
     handelAdd() {
       this.currentType = 'add'

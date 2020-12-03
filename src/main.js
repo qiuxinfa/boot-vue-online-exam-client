@@ -28,6 +28,12 @@ if (process.env.NODE_ENV === 'production') {
   mockXHR()
 }
 
+// 视频播放插件vue-video-player
+import VideoPlayer from 'vue-video-player'
+require('video.js/dist/video-js.css')
+require('vue-video-player/src/custom-theme.css')
+Vue.use(VideoPlayer)
+
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
 
