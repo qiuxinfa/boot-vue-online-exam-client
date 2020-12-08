@@ -57,7 +57,7 @@
       </el-table-column>
       <el-table-column label="题目内容"  align="center" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          {{ scope.row.questionContent }}
+          <span v-html="scope.row.questionContent"></span>
         </template>
       </el-table-column>
       <el-table-column label="创建时间"  align="center">
@@ -118,9 +118,14 @@
                     </el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="题目" prop="questionContent" :rules="[{ required: true, message: '请输入题目'},{ min: 1, max: 200, message: '长度在 1 到 200 个字符'}]">
-                  <el-input type="textarea" placeholder="输入题目,如:从计算机网络系统组成的角度看，计算机网络可以分为()和()。注意需要考生答题部分一定要用括号（英文半角）括起来。"
-                      auto-complete="off" v-model="ruleForm.questionContent" :disabled="currentType=='view'"></el-input>
+                <el-form-item label="题目" prop="questionContent" :rules="[{ required: true, message: '请输入题目'}]">
+                  <my-editor
+                     v-model="ruleForm.questionContent"
+                     :isClear="isClear"
+                     @change="change"
+                  ></my-editor>
+<!--                  <el-input type="textarea" placeholder="输入题目,如:从计算机网络系统组成的角度看，计算机网络可以分为()和()。注意需要考生答题部分一定要用括号（英文半角）括起来。"
+                      auto-complete="off" v-model="ruleForm.questionContent" :disabled="currentType=='view'"></el-input> -->
                 </el-form-item>
                 <!-- 填空题 -->
                 <template v-if="activeName=='first'">
@@ -215,8 +220,12 @@
 <script>
 import { getQuestionList,addFill,addJudge,addSingle,addMulti,exportQuestionList,exportTemplate,importQuestions } from '@/api/question'
 import { getUserId } from '@/utils/auth'
+import MyEditor from '@/components/editor/MyEditor.vue'
 
 export default {
+  components:{
+    MyEditor
+  },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -286,6 +295,8 @@ export default {
       uploadUrl: '/question/import',  // 随便写一个
       fileList: [],
       showFile: false,
+      isClear: false,
+
     }
   },
   created() {
@@ -312,6 +323,12 @@ export default {
     queryData(){
       this.fetchData()
     },
+
+    // 获取文本编辑器的内容
+    change(val){
+      // console.log("editor中，题目内容： "+val)
+    },
+
     //切换标签页
     handleClick(tab, event) {
       this.fetchData()

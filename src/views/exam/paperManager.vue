@@ -190,6 +190,9 @@
                  prop="questionContent"
                  label="题目描述"
                  >
+                  <template slot-scope="scope">
+                     <p v-html='scope.row.questionContent'></p>
+                   </template>
                </el-table-column>
              </el-table>
          </el-tab-pane>

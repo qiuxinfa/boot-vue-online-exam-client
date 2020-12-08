@@ -39,7 +39,7 @@
               </li>
             </ul>
             <div class="l-bottom">
-        <template v-if="this.topic[0].length != 0">
+        <template v-if="this.topic[0] && this.topic[0].length != 0">
           <div class="item" >
             <p>填空题部分</p>
             <ul>
@@ -49,7 +49,7 @@
             </ul>
           </div>
        </template>
-       <template v-if="this.topic[1].length != 0">
+       <template v-if="this.topic[1] && this.topic[1].length != 0">
           <div class="item">
             <p>判断题部分</p>
             <ul>
@@ -59,7 +59,7 @@
             </ul>
           </div>
        </template>
-       <template v-if="this.topic[2].length != 0">
+       <template v-if="this.topic[2] && this.topic[2].length != 0">
           <div class="item">
             <p>单选题部分</p>
             <ul>
@@ -74,7 +74,7 @@
             </ul>
           </div>
         </template>
-        <template v-if="this.topic[3].length != 0">
+        <template v-if="this.topic[3] && this.topic[3].length != 0">
            <div class="item">
              <p>多选题部分</p>
              <ul>
@@ -103,8 +103,8 @@
             <span>全卷共{{topicCount[0] + topicCount[1] + topicCount[2]}}题  <i class="iconfont icon-time"></i>倒计时：<b>{{time}}</b>分钟</span>
           </div>
           <div class="content">
-            <p class="topic"><span class="number">{{number}}</span>{{showQuestion}}</p>
-            <template v-if="this.topic[0].length != 0">
+            <p class="topic"><span class="number">{{number}}</span><span v-html="showQuestion"></span></p>
+            <template v-if="this.topic[0] && this.topic[0].length != 0">
               <div class="fill" v-if="currentType == 0">
                 <div v-for="(item,currentIndex) in part" :key="currentIndex">
                   <el-input placeholder="请填在此处"
@@ -123,7 +123,7 @@
                 </div>
               </div>
             </template>
-            <template v-if="this.topic[1].length != 0">
+            <template v-if="this.topic[1] && this.topic[1].length != 0">
               <div class="judge" v-if="currentType == 1">
                 <el-radio-group v-model="judgeAnswer[index]" @change="getJudgeLabel">
                   <el-radio :label="answerT">T</el-radio>
@@ -138,7 +138,7 @@
                 </div>
               </div>
             </template>
-            <template v-if="this.topic[2].length != 0">
+            <template v-if="this.topic[2] && this.topic[2].length != 0">
               <div v-if="currentType == 2">
                 <el-radio-group v-model="radio[index]" @change="getChangeLabel" >
                   <el-radio :label="answerA">A. {{showAnswer.choiceA}}</el-radio>
@@ -155,7 +155,7 @@
                 </div>
               </div>
              </template>
-             <template v-if="this.topic[3].length != 0">
+             <template v-if="this.topic[3] && this.topic[3].length != 0">
                <div v-if="currentType == 3">
                  <el-checkbox-group v-model="multi[index]" @change="changeMulti" >
                    <el-checkbox :label="answerA">A. {{showAnswer.choiceA}}</el-checkbox>
